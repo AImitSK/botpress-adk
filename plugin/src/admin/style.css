@@ -1,0 +1,32 @@
+.bpwc-admin {
+	max-width: 800px;
+	margin-top: 20px;
+}
+
+.bpwc-admin .components-tab-panel__tabs {
+	margin-bottom: 20px;
+}
+
+.bpwc-admin .bpwc-tab-content {
+	padding: 16px 0;
+}
+
+.bpwc-admin .bpwc-field {
+	margin-bottom: 16px;
+}
+
+.bpwc-admin .bpwc-token-display {
+	background: #f0f0f0;
+	padding: 8px 12px;
+	font-family: monospace;
+	word-break: break-all;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	margin: 8px 0;
+}
+
+.bpwc-admin .bpwc-actions {
+	margin-top: 24px;
+	padding-top: 16px;
+	border-top: 1px solid #ddd;
+}

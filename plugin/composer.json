@@ -1,0 +1,13 @@
+{
+    "name": "botpress/webchat-plugin",
+    "description": "Botpress Webchat WordPress Plugin",
+    "type": "wordpress-plugin",
+    "require": {
+        "php": ">=8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bpwc\\": "includes/"
+        }
+    }
+}

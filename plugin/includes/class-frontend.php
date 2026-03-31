@@ -80,7 +80,7 @@ class Frontend {
 		$styling = $settings['styling'];
 
 		$config = [
-			'webchatId' => $settings['connection']['webchat_id'],
+			'clientId' => $settings['connection']['webchat_id'],
 		];
 
 		if ( ! empty( $settings['connection']['bot_id'] ) ) {

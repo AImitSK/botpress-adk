@@ -1,96 +1,126 @@
+@import "./base.css";
+
+/* ============================================
+   Conversations Viewer
+   ============================================ */
+
 .bpwc-conversations {
+	margin: -20px 0 0 -20px;
+	padding: var(--space-2xl) var(--space-3xl);
+	min-height: calc(100vh - 32px);
+	background: var(--bpwc-bg);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	max-width: 1000px;
-	margin-top: 20px;
 }
 
 .bpwc-conversations__header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 16px;
+	margin-bottom: var(--space-lg);
 }
 
 .bpwc-conversations__header h2 {
 	margin: 0;
+	font-size: 24px;
+	font-weight: 700;
+	color: var(--bpwc-text);
 }
 
 .bpwc-conversations__pagination {
-	margin-top: 16px;
+	margin-top: var(--space-lg);
 }
+
+/* ---- Filters ---- */
 
 .bpwc-filters {
 	display: flex;
-	gap: 16px;
+	gap: var(--space-lg);
 	align-items: flex-end;
-	margin-bottom: 16px;
+	margin-bottom: var(--space-lg);
 }
 
 .bpwc-filters__search {
 	flex: 1;
 }
 
-/* Detail view */
+/* ---- Detail View ---- */
+
 .bpwc-detail {
+	margin: -20px 0 0 -20px;
+	padding: var(--space-2xl) var(--space-3xl);
+	min-height: calc(100vh - 32px);
+	background: var(--bpwc-bg);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	max-width: 800px;
-	margin-top: 20px;
 }
 
 .bpwc-detail__header {
-	margin-bottom: 24px;
+	margin-bottom: var(--space-2xl);
 }
 
 .bpwc-detail__header h2 {
-	margin: 8px 0 4px;
+	margin: var(--space-sm) 0 var(--space-xs);
+	font-size: 20px;
+	font-weight: 600;
+	color: var(--bpwc-text);
 }
 
 .bpwc-detail__messages {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
-	padding: 16px;
-	background: #f9f9f9;
-	border: 1px solid #ddd;
-	border-radius: 8px;
+	gap: var(--space-md);
+	padding: var(--space-lg);
+	background: var(--bpwc-bg-card);
+	border: 1px solid var(--bpwc-border);
+	border-radius: var(--radius-lg);
 	max-height: 600px;
 	overflow-y: auto;
 }
 
-/* Message bubbles */
+/* ---- Message Bubbles ---- */
+
 .bpwc-bubble {
 	max-width: 75%;
 	padding: 10px 14px;
-	border-radius: 12px;
+	border-radius: var(--radius-lg);
 	line-height: 1.5;
 }
 
 .bpwc-bubble--user {
 	align-self: flex-start;
-	background: #e3f2fd;
+	background: #E3F2FD;
 	border-bottom-left-radius: 2px;
 }
 
 .bpwc-bubble--bot {
 	align-self: flex-end;
-	background: #ffffff;
-	border: 1px solid #ddd;
+	background: var(--bpwc-bg-card);
+	border: 1px solid var(--bpwc-border);
 	border-bottom-right-radius: 2px;
 }
 
 .bpwc-bubble__label {
 	font-size: 11px;
 	font-weight: 600;
-	color: #666;
-	margin-bottom: 4px;
+	color: var(--bpwc-text-muted);
+	margin-bottom: var(--space-xs);
 }
 
 .bpwc-bubble__time {
-	margin-left: 8px;
+	margin-left: var(--space-sm);
 	font-weight: 400;
-	color: #999;
+	color: var(--bpwc-text-disabled);
 }
 
 .bpwc-bubble__text {
 	font-size: 14px;
 	white-space: pre-wrap;
 	word-wrap: break-word;
+}
+
+/* ---- Export Button ---- */
+
+.bpwc-export-btn {
+	border-radius: var(--radius-sm) !important;
 }

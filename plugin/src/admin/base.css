@@ -1,0 +1,437 @@
+/* ============================================
+   Botpress Webchat — Design System Base
+   ============================================ */
+
+:root {
+	/* Colors — Primary */
+	--bpwc-primary: #3276EA;
+	--bpwc-primary-hover: #2058B8;
+	--bpwc-primary-light: #EEF3FF;
+	--bpwc-primary-border: #C5D7F7;
+
+	/* Colors — Accent (CTA) */
+	--bpwc-accent: #F97316;
+	--bpwc-accent-hover: #EA580C;
+
+	/* Colors — Status */
+	--bpwc-success: #34C759;
+	--bpwc-success-bg: #D4EDDA;
+	--bpwc-success-text: #155724;
+	--bpwc-error: #E74C3C;
+	--bpwc-error-bg: #F8D7DA;
+	--bpwc-error-text: #721C24;
+	--bpwc-warning: #FF9800;
+	--bpwc-warning-bg: #FFF8E1;
+	--bpwc-warning-text: #F57F17;
+	--bpwc-info-bg: #E8F5E9;
+	--bpwc-info-text: #2E7D32;
+
+	/* Colors — Neutral */
+	--bpwc-text: #1A1A1A;
+	--bpwc-text-secondary: #555;
+	--bpwc-text-muted: #888;
+	--bpwc-text-disabled: #CCC;
+	--bpwc-bg: #F8F9FA;
+	--bpwc-bg-card: #FFF;
+	--bpwc-bg-input: #FAFAFA;
+	--bpwc-border: #E4E4E4;
+	--bpwc-border-light: #F0F0F0;
+	--bpwc-border-hover: #BBB;
+	--bpwc-divider: #EEE;
+
+	/* Spacing */
+	--space-xs: 4px;
+	--space-sm: 8px;
+	--space-md: 12px;
+	--space-lg: 16px;
+	--space-xl: 20px;
+	--space-2xl: 24px;
+	--space-3xl: 32px;
+
+	/* Shadows */
+	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+	--shadow-md: 0 2px 8px rgba(50, 118, 234, 0.1);
+	--shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.12);
+	--shadow-focus: 0 0 0 2px rgba(50, 118, 234, 0.15);
+
+	/* Radius */
+	--radius-sm: 6px;
+	--radius-md: 8px;
+	--radius-lg: 12px;
+	--radius-xl: 16px;
+	--radius-pill: 12px;
+	--radius-round: 50%;
+}
+
+/* ============================================
+   Shared Utilities
+   ============================================ */
+
+/* Page Shell — full bleed admin page */
+.bpwc-page {
+	margin: -20px 0 0 -20px;
+	min-height: calc(100vh - 32px);
+	background: var(--bpwc-bg);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Page Header */
+.bpwc-page-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--space-2xl);
+}
+
+.bpwc-page-header h1 {
+	margin: 0;
+	font-size: 24px;
+	font-weight: 700;
+	color: var(--bpwc-text);
+}
+
+/* Hide WP notices */
+#bpwc-admin-root ~ .notice,
+#bpwc-admin-root ~ .updated,
+#bpwc-admin-root ~ .update-nag,
+#bpwc-knowledge-root ~ .notice,
+#bpwc-conversations-root ~ .notice,
+#wpbody-content > .notice,
+#wpbody-content > .updated,
+#wpbody-content > .update-nag {
+	display: none !important;
+}
+
+/* ---- Buttons ---- */
+
+.bpwc-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-sm);
+	border-radius: var(--radius-sm);
+	font-weight: 600;
+	font-size: 13px;
+	padding: 8px 16px;
+	cursor: pointer;
+	transition: all 0.15s;
+	border: none;
+	line-height: 1.4;
+}
+
+.bpwc-btn--primary {
+	background: var(--bpwc-accent);
+	color: #fff;
+}
+
+.bpwc-btn--primary:hover {
+	background: var(--bpwc-accent-hover);
+}
+
+.bpwc-btn--secondary {
+	background: var(--bpwc-bg-card);
+	color: var(--bpwc-text-secondary);
+	border: 1px solid var(--bpwc-border);
+}
+
+.bpwc-btn--secondary:hover {
+	border-color: var(--bpwc-border-hover);
+	color: var(--bpwc-text);
+}
+
+.bpwc-btn--link {
+	background: none;
+	color: var(--bpwc-primary);
+	padding: 0;
+}
+
+.bpwc-btn--link:hover {
+	color: var(--bpwc-primary-hover);
+}
+
+.bpwc-btn--destructive {
+	background: none;
+	color: var(--bpwc-error);
+	padding: 4px 8px;
+}
+
+.bpwc-btn--destructive:hover {
+	background: var(--bpwc-error-bg);
+}
+
+/* ---- Notices ---- */
+
+.bpwc-notice {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--space-md) var(--space-lg);
+	border-radius: var(--radius-md);
+	font-size: 14px;
+	margin-bottom: var(--space-lg);
+}
+
+.bpwc-notice--success {
+	background: var(--bpwc-success-bg);
+	color: var(--bpwc-success-text);
+}
+
+.bpwc-notice--error {
+	background: var(--bpwc-error-bg);
+	color: var(--bpwc-error-text);
+}
+
+.bpwc-notice--warning {
+	background: var(--bpwc-warning-bg);
+	color: var(--bpwc-warning-text);
+}
+
+.bpwc-notice__close {
+	background: none;
+	border: none;
+	font-size: 18px;
+	cursor: pointer;
+	color: inherit;
+	opacity: 0.6;
+	padding: 0;
+}
+
+.bpwc-notice__close:hover {
+	opacity: 1;
+}
+
+/* ---- Badges ---- */
+
+.bpwc-badge {
+	display: inline-block;
+	padding: var(--space-xs) var(--space-md);
+	border-radius: var(--radius-pill);
+	font-weight: 600;
+	font-size: 13px;
+}
+
+.bpwc-badge--success {
+	background: var(--bpwc-success-bg);
+	color: var(--bpwc-success-text);
+}
+
+.bpwc-badge--error {
+	background: var(--bpwc-error-bg);
+	color: var(--bpwc-error-text);
+}
+
+/* ---- Cards ---- */
+
+.bpwc-card {
+	background: var(--bpwc-bg-card);
+	border: 1px solid var(--bpwc-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-lg) var(--space-xl);
+	transition: all 0.15s;
+}
+
+.bpwc-card--interactive {
+	cursor: pointer;
+}
+
+.bpwc-card--interactive:hover {
+	border-color: var(--bpwc-primary);
+	box-shadow: var(--shadow-md);
+	transform: translateY(-1px);
+}
+
+.bpwc-card--selected {
+	border-color: var(--bpwc-primary);
+	background: var(--bpwc-primary-light);
+}
+
+.bpwc-card--inactive {
+	opacity: 0.4;
+}
+
+/* ---- Panels ---- */
+
+.bpwc-panel {
+	background: var(--bpwc-bg-card);
+	border: 1px solid var(--bpwc-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-2xl);
+	margin-bottom: var(--space-lg);
+}
+
+.bpwc-panel--highlight {
+	border-color: #E8D5B7;
+	background: #FFFBF5;
+}
+
+.bpwc-panel h2 {
+	margin: 0 0 var(--space-xl);
+	font-size: 18px;
+	font-weight: 600;
+	color: var(--bpwc-text);
+}
+
+.bpwc-panel h3 {
+	margin: 0 0 var(--space-sm);
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--bpwc-text);
+}
+
+/* ---- Toggle ---- */
+
+.bpwc-toggle {
+	width: 44px;
+	height: 24px;
+	border-radius: 12px;
+	background: var(--bpwc-text-disabled);
+	border: none;
+	cursor: pointer;
+	position: relative;
+	transition: background 0.2s;
+	padding: 0;
+	flex-shrink: 0;
+}
+
+.bpwc-toggle.is-active {
+	background: var(--bpwc-success);
+}
+
+.bpwc-toggle__knob {
+	display: block;
+	width: 20px;
+	height: 20px;
+	border-radius: var(--radius-round);
+	background: #fff;
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	transition: transform 0.2s;
+	box-shadow: var(--shadow-sm);
+}
+
+.bpwc-toggle.is-active .bpwc-toggle__knob {
+	transform: translateX(20px);
+}
+
+/* ---- Section ---- */
+
+.bpwc-section h2 {
+	font-size: 18px;
+	font-weight: 600;
+	margin: 0 0 var(--space-xs);
+	color: var(--bpwc-text);
+}
+
+.bpwc-section__desc {
+	color: var(--bpwc-text-muted);
+	margin: 0 0 var(--space-xl);
+	font-size: 13px;
+}
+
+.bpwc-section hr {
+	margin: 28px 0 var(--space-xl);
+	border: none;
+	border-top: 1px solid var(--bpwc-divider);
+}
+
+/* ---- Field ---- */
+
+.bpwc-field {
+	margin-bottom: var(--space-xl);
+}
+
+.bpwc-field-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: var(--space-md);
+	margin-bottom: var(--space-xl);
+}
+
+@media (max-width: 1200px) {
+	.bpwc-field-row {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ---- Feature Card ---- */
+
+.bpwc-feature-card {
+	background: var(--bpwc-bg-card);
+	border: 1px solid var(--bpwc-border);
+	border-radius: var(--radius-md);
+	padding: var(--space-lg) var(--space-xl);
+	margin-bottom: var(--space-md);
+}
+
+/* ---- Table ---- */
+
+.bpwc-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+}
+
+.bpwc-table th {
+	background: var(--bpwc-bg);
+	padding: 10px var(--space-md);
+	text-align: left;
+	font-weight: 600;
+	font-size: 12px;
+	text-transform: uppercase;
+	color: var(--bpwc-text-secondary);
+	border-bottom: 2px solid var(--bpwc-border);
+	letter-spacing: 0.3px;
+}
+
+.bpwc-table td {
+	padding: 10px var(--space-md);
+	border-bottom: 1px solid var(--bpwc-border-light);
+	vertical-align: middle;
+}
+
+.bpwc-table tr:hover td {
+	background: #FAFBFC;
+}
+
+/* ---- Pagination ---- */
+
+.bpwc-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--space-md) 0;
+	margin-top: var(--space-lg);
+	border-top: 1px solid var(--bpwc-divider);
+	font-size: 13px;
+	color: var(--bpwc-text-muted);
+}
+
+.bpwc-pagination__buttons {
+	display: flex;
+	gap: var(--space-xs);
+}
+
+.bpwc-pagination__btn {
+	min-width: 32px;
+	height: 32px;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--bpwc-border);
+	background: var(--bpwc-bg-card);
+	font-size: 13px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.15s;
+}
+
+.bpwc-pagination__btn:hover {
+	border-color: var(--bpwc-primary);
+	color: var(--bpwc-primary);
+}
+
+.bpwc-pagination__btn.is-active {
+	background: var(--bpwc-primary);
+	color: #fff;
+	border-color: var(--bpwc-primary);
+}

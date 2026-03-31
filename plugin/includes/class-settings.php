@@ -22,8 +22,8 @@ class Settings {
 
 		return [
 			'connection' => [
-				'bot_id'       => '',
-				'webchat_id'   => '',
+				'bot_id'       => $dev['bot_id'] ?? '',
+				'webchat_id'   => $dev['webchat_id'] ?? '',
 				'api_token'    => '',
 				'wp_api_url'   => '',
 				'botpress_pat' => $dev['botpress_pat'] ?? '',

@@ -1,16 +1,13 @@
-import { useState } from '@wordpress/element';
-import { TextControl, Button, Notice } from '@wordpress/components';
+import { useState, useEffect } from '@wordpress/element';
+import { Button, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 export default function ConnectionTab( { settings, onSave, saving } ) {
-	const [ conn, setConn ] = useState( settings.connection );
+	const conn = settings.connection;
+	const hasBot = !! conn.bot_id && !! conn.webchat_id;
 	const [ regStatus, setRegStatus ] = useState( null );
 
-	const update = ( key, value ) => {
-		setConn( { ...conn, [ key ]: value } );
-	};
-
-	const handleSave = async () => {
+	const handleConnect = async () => {
 		const result = await onSave( { connection: conn } );
 		if ( result?.registration ) {
 			setRegStatus( result.registration );
@@ -19,6 +16,8 @@ export default function ConnectionTab( { settings, onSave, saving } ) {
 
 	return (
 		<div className="bpwc-tab-content">
+			<h3>{ __( 'Bot Connection', 'botpress-webchat' ) }</h3>
+
 			{ regStatus && (
 				<Notice
 					status={ regStatus.success ? 'success' : 'error' }
@@ -29,45 +28,49 @@ export default function ConnectionTab( { settings, onSave, saving } ) {
 				</Notice>
 			) }
 
-			<div className="bpwc-field">
-				<TextControl
-					label={ __( 'Bot ID', 'botpress-webchat' ) }
-					value={ conn.bot_id }
-					onChange={ ( v ) => update( 'bot_id', v ) }
-					help={ __( 'Your Botpress Bot ID. Pre-filled from developer config.', 'botpress-webchat' ) }
-				/>
-			</div>
-			<div className="bpwc-field">
-				<TextControl
-					label={ __( 'Webchat ID', 'botpress-webchat' ) }
-					value={ conn.webchat_id }
-					onChange={ ( v ) => update( 'webchat_id', v ) }
-					help={ __( 'The Webchat integration ID from Botpress.', 'botpress-webchat' ) }
-				/>
-			</div>
-			<div className="bpwc-field">
-				<TextControl
-					label={ __( 'WordPress API URL', 'botpress-webchat' ) }
-					value={ conn.wp_api_url }
-					onChange={ ( v ) => update( 'wp_api_url', v ) }
-					help={ __( 'Leave empty to auto-detect. Only set if your site uses a custom URL.', 'botpress-webchat' ) }
-					placeholder={ window.location.origin + '/wp-json' }
-				/>
-			</div>
+			{ hasBot ? (
+				<div>
+					<table className="form-table">
+						<tbody>
+							<tr>
+								<th>{ __( 'Status', 'botpress-webchat' ) }</th>
+								<td><span className="bpwc-status bpwc-status--ok">{ __( 'Configured', 'botpress-webchat' ) }</span></td>
+							</tr>
+							<tr>
+								<th>{ __( 'Bot ID', 'botpress-webchat' ) }</th>
+								<td><code>{ conn.bot_id.substring( 0, 16 ) }...</code></td>
+							</tr>
+							<tr>
+								<th>{ __( 'Webchat ID', 'botpress-webchat' ) }</th>
+								<td><code>{ conn.webchat_id }</code></td>
+							</tr>
+						</tbody>
+					</table>
 
-			<div className="bpwc-actions">
-				<Button
-					variant="primary"
-					onClick={ handleSave }
-					isBusy={ saving }
-					disabled={ saving }
-				>
-					{ __( 'Save & Connect to Bot', 'botpress-webchat' ) }
-				</Button>
-				<p className="description" style={ { marginTop: '8px' } }>
-					{ __( 'Saves settings and automatically registers this website with the Botpress bot.', 'botpress-webchat' ) }
-				</p>
-			</div>
+					<div className="bpwc-actions">
+						<Button
+							variant="primary"
+							onClick={ handleConnect }
+							isBusy={ saving }
+							disabled={ saving }
+						>
+							{ __( 'Reconnect to Bot', 'botpress-webchat' ) }
+						</Button>
+						<p className="description" style={ { marginTop: '8px' } }>
+							{ __( 'Registers this website with the bot. Use after changing your site URL.', 'botpress-webchat' ) }
+						</p>
+					</div>
+				</div>
+			) : (
+				<Notice status="warning" isDismissible={ false }>
+					<p>
+						<strong>{ __( 'Bot not configured.', 'botpress-webchat' ) }</strong>
+					</p>
+					<p>
+						{ __( 'Please upload the developer-config.php file you received from your developer to the plugin folder (wp-content/plugins/botpress-webchat/).', 'botpress-webchat' ) }
+					</p>
+				</Notice>
+			) }
 		</div>
 	);
 }

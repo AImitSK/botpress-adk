@@ -13,24 +13,20 @@ class Auto_Register {
 	 */
 	public static function sync(): array {
 		$settings = Settings::get_all();
-		$pat      = $settings['connection']['botpress_pat'];
+		$dev      = self::dev_config();
+		$pat      = $dev['botpress_pat'] ?? '';
+		$wkspace  = $dev['workspace_id'] ?? '';
 		$bot_id   = $settings['connection']['bot_id'];
 
-		if ( empty( $pat ) || empty( $bot_id ) ) {
+		if ( empty( $pat ) || empty( $bot_id ) || empty( $wkspace ) ) {
 			return [
 				'success' => false,
-				'message' => __( 'Bot ID or PAT missing.', 'botpress-webchat' ),
+				'message' => __( 'Bot ID, PAT or Workspace ID missing.', 'botpress-webchat' ),
 			];
 		}
 
-		// Ensure we have an API token for the bot.
-		$token_hash = get_option( 'bpwc_api_token_hash', '' );
-		if ( empty( $token_hash ) ) {
-			$token = Settings::generate_api_token();
-		} else {
-			// Re-generate so we have the plain token to send.
-			$token = Settings::generate_api_token();
-		}
+		// Generate a fresh API token so we have the plain text to send.
+		$token = Settings::generate_api_token();
 
 		// Determine the public WordPress URL.
 		$wp_api_url = $settings['connection']['wp_api_url'];
@@ -39,18 +35,21 @@ class Auto_Register {
 		}
 
 		// Push configuration to Botpress Cloud.
-		$response = wp_remote_request( self::API_BASE . '/bots/' . $bot_id, [
+		$response = wp_remote_request( self::API_BASE . '/admin/bots/' . $bot_id, [
 			'method'  => 'PUT',
 			'headers' => [
-				'Authorization' => 'Bearer ' . $pat,
-				'Content-Type'  => 'application/json',
+				'Authorization'  => 'Bearer ' . $pat,
+				'x-workspace-id' => $wkspace,
+				'Content-Type'   => 'application/json',
 			],
 			'body'    => wp_json_encode( [
 				'configuration' => [
-					'wordpressBaseUrl' => rtrim( $wp_api_url, '/' ),
-					'wpApiToken'       => $token,
-					'companyName'      => get_bloginfo( 'name' ),
-					'language'         => $settings['general']['language'] ?? 'de',
+					'data' => [
+						'wordpressBaseUrl' => rtrim( $wp_api_url, '/' ),
+						'wpApiToken'       => $token,
+						'companyName'      => get_bloginfo( 'name' ),
+						'language'         => $settings['general']['language'] ?? 'de',
+					],
 				],
 			] ),
 			'timeout' => 15,
@@ -76,5 +75,10 @@ class Auto_Register {
 			'success' => false,
 			'message' => sprintf( __( 'Botpress API error (%d): %s', 'botpress-webchat' ), $code, $body ),
 		];
+	}
+
+	private static function dev_config(): array {
+		$path = BPWC_PLUGIN_DIR . 'developer-config.php';
+		return file_exists( $path ) ? (array) require $path : [];
 	}
 }

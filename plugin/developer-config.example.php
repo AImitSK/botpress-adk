@@ -9,6 +9,9 @@ return [
 	// Your Botpress Personal Access Token (from Botpress Cloud → Profile → Access Tokens).
 	'botpress_pat' => '',
 
+	// Your Botpress Workspace ID (from the URL in Botpress Cloud).
+	'workspace_id' => '',
+
 	// Default language for bot responses (customer can change in admin).
 	'default_language' => 'de',
 ];

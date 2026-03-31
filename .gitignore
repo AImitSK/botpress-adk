@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Botpress ADK
+.botpress/
+
+# Claude Code — persönliche Daten nicht committen
+.claude/projects/
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db

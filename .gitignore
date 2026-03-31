@@ -8,6 +8,9 @@ node_modules/
 .claude/projects/
 .claude/settings.local.json
 
+# Secrets
+plugin/developer-config.php
+
 # OS
 .DS_Store
 Thumbs.db

@@ -314,6 +314,61 @@
 	color: #999;
 }
 
+/* Type Selector Cards */
+.bpwc-kb__type-grid {
+	margin-bottom: 16px;
+}
+
+.bpwc-kb__type-label {
+	display: block;
+	font-weight: 600;
+	font-size: 13px;
+	margin-bottom: 8px;
+	color: #1a1a1a;
+}
+
+.bpwc-kb__type-cards {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 8px;
+}
+
+@media (max-width: 900px) {
+	.bpwc-kb__type-cards {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+.bpwc-kb__type-card {
+	padding: 12px 10px;
+	border: 2px solid #e4e4e4;
+	border-radius: 8px;
+	background: #fff;
+	cursor: pointer;
+	text-align: center;
+	font-size: 12px;
+	font-weight: 500;
+	color: #555;
+	transition: all 0.15s;
+}
+
+.bpwc-kb__type-card:hover:not(.is-disabled) {
+	border-color: #3276EA;
+	color: #3276EA;
+}
+
+.bpwc-kb__type-card.is-selected {
+	border-color: #3276EA;
+	background: #EEF3FF;
+	color: #3276EA;
+	font-weight: 600;
+}
+
+.bpwc-kb__type-card.is-disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
 /* Coming Soon */
 .bpwc-kb__coming-soon {
 	padding: 32px;

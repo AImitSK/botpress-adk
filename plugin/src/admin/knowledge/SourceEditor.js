@@ -8,15 +8,17 @@ import TableSourceConfig from './configs/TableSourceConfig';
 import WpDataSourceConfig from './configs/WpDataSourceConfig';
 
 const SOURCE_TYPES = [
-	{ value: 'text', label: '📝  Text / FAQ' },
-	{ value: 'table', label: '📊  Table' },
-	{ value: 'wp_data', label: '🗄️  WordPress Data' },
-	{ value: 'internal_pages', label: '📄  Internal Pages (coming soon)', disabled: true },
-	{ value: 'external_pages', label: '🌐  External Pages (coming soon)', disabled: true },
-	{ value: 'file', label: '📎  File Upload (coming soon)', disabled: true },
-	{ value: 'sitemap', label: '🗺️  Sitemap (coming soon)', disabled: true },
-	{ value: 'rss', label: '📡  RSS Feed (coming soon)', disabled: true },
+	{ value: 'text', label: 'Text / FAQ' },
+	{ value: 'table', label: 'Table' },
+	{ value: 'wp_data', label: 'WordPress Data' },
+	{ value: 'internal_pages', label: 'Internal Pages (coming soon)' },
+	{ value: 'external_pages', label: 'External Pages (coming soon)' },
+	{ value: 'file', label: 'File Upload (coming soon)' },
+	{ value: 'sitemap', label: 'Sitemap (coming soon)' },
+	{ value: 'rss', label: 'RSS Feed (coming soon)' },
 ];
+
+const ENABLED_TYPES = [ 'text', 'table', 'wp_data' ];
 
 export default function SourceEditor( { sourceId, onSave, onDelete, onBack } ) {
 	const isNew = sourceId === 0;
@@ -138,16 +140,28 @@ export default function SourceEditor( { sourceId, onSave, onDelete, onBack } ) {
 						</div>
 
 						{ isNew && (
-							<div className="bpwc-kb__field">
-								<SelectControl
-									label={ __( 'Source Type', 'botpress-webchat' ) }
-									value={ source.type }
-									options={ SOURCE_TYPES }
-									onChange={ ( v ) => {
-										update( 'type', v );
-										update( 'config', {} );
-									} }
-								/>
+							<div className="bpwc-kb__type-grid">
+								<label className="bpwc-kb__type-label">{ __( 'Source Type', 'botpress-webchat' ) }</label>
+								<div className="bpwc-kb__type-cards">
+									{ SOURCE_TYPES.map( ( t ) => {
+										const enabled = ENABLED_TYPES.includes( t.value );
+										return (
+											<button
+												key={ t.value }
+												type="button"
+												className={ `bpwc-kb__type-card ${ source.type === t.value ? 'is-selected' : '' } ${ ! enabled ? 'is-disabled' : '' }` }
+												onClick={ () => {
+													if ( enabled ) {
+														update( 'type', t.value );
+														update( 'config', {} );
+													}
+												} }
+											>
+												{ t.label }
+											</button>
+										);
+									} ) }
+								</div>
 							</div>
 						) }
 					</div>

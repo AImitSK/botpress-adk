@@ -1,5 +1,5 @@
 import { useState, useEffect } from '@wordpress/element';
-import { Button, Spinner } from '@wordpress/components';
+import { Spinner } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 import MessageBubble from '../components/MessageBubble';
@@ -14,9 +14,7 @@ export default function ConversationDetail( { conversationId, onBack } ) {
 			setLoading( true );
 			setError( '' );
 			try {
-				const res = await apiFetch( {
-					path: `/bpwc/v1/conversations/${ conversationId }`,
-				} );
+				const res = await apiFetch( { path: `/bpwc/v1/conversations/${ conversationId }` } );
 				if ( res.success ) {
 					setData( res.data );
 				} else {
@@ -27,54 +25,56 @@ export default function ConversationDetail( { conversationId, onBack } ) {
 			}
 			setLoading( false );
 		};
-
 		fetchDetail();
 	}, [ conversationId ] );
 
 	if ( loading ) {
-		return <Spinner />;
+		return (
+			<div style={ { display: 'flex', justifyContent: 'center', padding: '60px' } }>
+				<Spinner />
+			</div>
+		);
 	}
 
 	if ( error ) {
 		return (
-			<div>
-				<Button variant="link" onClick={ onBack }>
-					&larr; { __( 'Back to list', 'botpress-webchat' ) }
-				</Button>
-				<div className="notice notice-error"><p>{ error }</p></div>
+			<div className="bpwc-convo-detail">
+				<button className="bpwc-convo-detail__back" onClick={ onBack }>
+					&larr; { __( 'Back', 'botpress-webchat' ) }
+				</button>
+				<div className="bpwc-notice bpwc-notice--error">{ error }</div>
 			</div>
 		);
 	}
 
 	const convo = data?.conversation?.conversation || data?.conversation || {};
 	const messages = data?.messages || [];
-
-	// Sort messages oldest first.
-	const sorted = [ ...messages ].sort(
-		( a, b ) => new Date( a.createdAt ) - new Date( b.createdAt )
-	);
+	const sorted = [ ...messages ].sort( ( a, b ) => new Date( a.createdAt ) - new Date( b.createdAt ) );
 
 	return (
-		<div className="bpwc-detail">
-			<div className="bpwc-detail__header">
-				<Button variant="link" onClick={ onBack }>
-					&larr; { __( 'Back to list', 'botpress-webchat' ) }
-				</Button>
+		<div className="bpwc-convo-detail">
+			<button className="bpwc-convo-detail__back" onClick={ onBack }>
+				&larr; { __( 'Back to conversations', 'botpress-webchat' ) }
+			</button>
+
+			<div className="bpwc-convo-detail__header">
 				<h2>
-					{ __( 'Conversation', 'botpress-webchat' ) }{ ' ' }
-					<code>{ conversationId.substring( 0, 16 ) }...</code>
+					{ __( 'Conversation', 'botpress-webchat' ) }
 				</h2>
 				{ convo.createdAt && (
 					<p className="description">
-						{ __( 'Started:', 'botpress-webchat' ) }{ ' ' }
 						{ new Date( convo.createdAt ).toLocaleString() }
+						{ ' — ' }
+						<code style={ { fontSize: 11 } }>{ conversationId.substring( 0, 24 ) }...</code>
 					</p>
 				) }
 			</div>
 
-			<div className="bpwc-detail__messages">
+			<div className="bpwc-convo-detail__messages">
 				{ sorted.length === 0 ? (
-					<p>{ __( 'No messages in this conversation.', 'botpress-webchat' ) }</p>
+					<p style={ { textAlign: 'center', color: 'var(--bpwc-text-muted)', padding: '40px' } }>
+						{ __( 'No messages in this conversation.', 'botpress-webchat' ) }
+					</p>
 				) : (
 					sorted.map( ( msg ) => (
 						<MessageBubble key={ msg.id } message={ msg } />

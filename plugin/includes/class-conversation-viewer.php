@@ -16,13 +16,18 @@ class Conversation_Viewer {
 	}
 
 	public static function render(): void {
-		echo '<div class="wrap"><div id="bpwc-conversations-root"></div></div>';
+		echo '<div id="bpwc-conversations-root"></div>';
 	}
 
 	public static function enqueue_assets( string $hook ): void {
 		if ( 'botpress-webchat_page_bpwc-conversations' !== $hook ) {
 			return;
 		}
+
+		add_action( 'in_admin_header', function () {
+			remove_all_actions( 'admin_notices' );
+			remove_all_actions( 'all_admin_notices' );
+		}, 999 );
 
 		$asset_file = BPWC_PLUGIN_DIR . 'build/conversations.asset.php';
 

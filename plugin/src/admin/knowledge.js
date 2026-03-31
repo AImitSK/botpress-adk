@@ -11,43 +11,28 @@ import './knowledge.css';
 function App() {
 	const [ sources, setSources ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
-	const [ editingId, setEditingId ] = useState( null ); // null=list, 0=new, id=edit
+	const [ editingId, setEditingId ] = useState( null );
 	const [ notice, setNotice ] = useState( null );
 
 	const fetchSources = async () => {
 		setLoading( true );
 		try {
 			const res = await apiFetch( { path: '/bpwc/v1/sources' } );
-			if ( res.success ) {
-				setSources( res.data );
-			}
+			if ( res.success ) setSources( res.data );
 		} catch ( err ) {
 			setNotice( { type: 'error', text: err.message } );
 		}
 		setLoading( false );
 	};
 
-	useEffect( () => {
-		fetchSources();
-	}, [] );
+	useEffect( () => { fetchSources(); }, [] );
 
 	const handleSave = async ( source ) => {
 		setNotice( null );
 		try {
-			let res;
-			if ( source.id ) {
-				res = await apiFetch( {
-					path: `/bpwc/v1/sources/${ source.id }`,
-					method: 'PUT',
-					data: source,
-				} );
-			} else {
-				res = await apiFetch( {
-					path: '/bpwc/v1/sources',
-					method: 'POST',
-					data: source,
-				} );
-			}
+			const res = source.id
+				? await apiFetch( { path: `/bpwc/v1/sources/${ source.id }`, method: 'PUT', data: source } )
+				: await apiFetch( { path: '/bpwc/v1/sources', method: 'POST', data: source } );
 			if ( res.success ) {
 				setNotice( { type: 'success', text: __( 'Source saved.', 'botpress-webchat' ) } );
 				setEditingId( null );
@@ -60,10 +45,7 @@ function App() {
 
 	const handleDelete = async ( id ) => {
 		try {
-			await apiFetch( {
-				path: `/bpwc/v1/sources/${ id }`,
-				method: 'DELETE',
-			} );
+			await apiFetch( { path: `/bpwc/v1/sources/${ id }`, method: 'DELETE' } );
 			setEditingId( null );
 			fetchSources();
 		} catch ( err ) {
@@ -73,39 +55,45 @@ function App() {
 
 	const handleToggleStatus = async ( source ) => {
 		const newStatus = source.status === 'active' ? 'inactive' : 'active';
-		await apiFetch( {
-			path: `/bpwc/v1/sources/${ source.id }`,
-			method: 'PUT',
-			data: { status: newStatus },
-		} );
+		await apiFetch( { path: `/bpwc/v1/sources/${ source.id }`, method: 'PUT', data: { status: newStatus } } );
 		fetchSources();
 	};
 
 	return (
-		<div className="bpwc-kb">
-			{ notice && (
-				<div className={ `bpwc-kb__notice bpwc-kb__notice--${ notice.type }` }>
-					{ notice.text }
-					<button onClick={ () => setNotice( null ) }>&times;</button>
+		<div className="bpwc-page">
+			<div className="bpwc-page__topbar">
+				<div className="bpwc-page__topbar-left">
+					<span className="dashicons dashicons-format-chat" />
+					<h1 className="bpwc-page__title">Webchat</h1>
+					<span className="bpwc-page__breadcrumb">Knowledge Base</span>
 				</div>
-			) }
+			</div>
 
-			{ editingId !== null ? (
-				<SourceEditor
-					sourceId={ editingId }
-					onSave={ handleSave }
-					onDelete={ handleDelete }
-					onBack={ () => setEditingId( null ) }
-				/>
-			) : (
-				<SourceList
-					sources={ sources }
-					loading={ loading }
-					onAdd={ () => setEditingId( 0 ) }
-					onEdit={ ( id ) => setEditingId( id ) }
-					onToggleStatus={ handleToggleStatus }
-				/>
-			) }
+			<div className="bpwc-page__content" style={ { padding: '32px 48px' } }>
+				{ notice && (
+					<div className={ `bpwc-notice bpwc-notice--${ notice.type }` } style={ { maxWidth: 900 } }>
+						{ notice.text }
+						<button onClick={ () => setNotice( null ) } style={ { background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: 'inherit', opacity: 0.6 } }>&times;</button>
+					</div>
+				) }
+
+				{ editingId !== null ? (
+					<SourceEditor
+						sourceId={ editingId }
+						onSave={ handleSave }
+						onDelete={ handleDelete }
+						onBack={ () => setEditingId( null ) }
+					/>
+				) : (
+					<SourceList
+						sources={ sources }
+						loading={ loading }
+						onAdd={ () => setEditingId( 0 ) }
+						onEdit={ ( id ) => setEditingId( id ) }
+						onToggleStatus={ handleToggleStatus }
+					/>
+				) }
+			</div>
 		</div>
 	);
 }

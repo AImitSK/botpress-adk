@@ -4,13 +4,7 @@
    Knowledge Base
    ============================================ */
 
-.bpwc-kb {
-	margin: -20px 0 0 -20px;
-	padding: var(--space-2xl) var(--space-3xl);
-	min-height: calc(100vh - 32px);
-	background: var(--bpwc-bg);
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-}
+/* Knowledge Base uses .bpwc-page shell from base.css */
 
 .bpwc-kb__list,
 .bpwc-kb__editor {

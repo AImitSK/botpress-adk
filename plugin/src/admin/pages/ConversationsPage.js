@@ -1,8 +1,7 @@
 import { useState, useEffect } from '@wordpress/element';
-import { Button, Spinner } from '@wordpress/components';
+import { Button, Spinner, TextControl, SelectControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
-import ConversationFilters from '../components/ConversationFilters';
 import ExportButton from '../components/ExportButton';
 
 export default function ConversationsPage( { onSelect } ) {
@@ -18,12 +17,8 @@ export default function ConversationsPage( { onSelect } ) {
 		setError( '' );
 		try {
 			const params = new URLSearchParams( { limit: String( limit ) } );
-			if ( token ) {
-				params.set( 'next_token', token );
-			}
-			const res = await apiFetch( {
-				path: `/bpwc/v1/conversations?${ params.toString() }`,
-			} );
+			if ( token ) params.set( 'next_token', token );
+			const res = await apiFetch( { path: `/bpwc/v1/conversations?${ params.toString() }` } );
 			if ( res.success ) {
 				setConversations( res.data.conversations || [] );
 				setNextToken( res.data.meta?.nextToken || '' );
@@ -36,83 +31,91 @@ export default function ConversationsPage( { onSelect } ) {
 		setLoading( false );
 	};
 
-	useEffect( () => {
-		fetchConversations();
-	}, [ limit ] );
+	useEffect( () => { fetchConversations(); }, [ limit ] );
 
 	const filtered = search
 		? conversations.filter( ( c ) => {
-				const id = c.id || '';
-				const tags = JSON.stringify( c.tags || {} );
-				return (
-					id.toLowerCase().includes( search.toLowerCase() ) ||
-					tags.toLowerCase().includes( search.toLowerCase() )
-				);
+				const str = JSON.stringify( c ).toLowerCase();
+				return str.includes( search.toLowerCase() );
 		  } )
 		: conversations;
 
 	return (
-		<div className="bpwc-conversations">
-			<div className="bpwc-conversations__header">
-				<h2>{ __( 'Conversations', 'botpress-webchat' ) }</h2>
+		<div className="bpwc-convos">
+			<div className="bpwc-convos__header">
+				<div>
+					<h2>{ __( 'Conversations', 'botpress-webchat' ) }</h2>
+					<p className="bpwc-convos__subtitle">
+						{ __( 'View and analyze chat conversations from your website visitors.', 'botpress-webchat' ) }
+					</p>
+				</div>
 				<ExportButton />
 			</div>
 
-			<ConversationFilters
-				search={ search }
-				onSearchChange={ setSearch }
-				limit={ limit }
-				onLimitChange={ setLimit }
-			/>
+			<div className="bpwc-convos__filters">
+				<TextControl
+					placeholder={ __( 'Search conversations...', 'botpress-webchat' ) }
+					value={ search }
+					onChange={ setSearch }
+					className="bpwc-convos__filters-search"
+				/>
+				<SelectControl
+					value={ String( limit ) }
+					options={ [
+						{ label: '10', value: '10' },
+						{ label: '25', value: '25' },
+						{ label: '50', value: '50' },
+					] }
+					onChange={ ( v ) => setLimit( parseInt( v, 10 ) ) }
+					__nextHasNoMarginBottom
+				/>
+			</div>
 
-			{ error && <div className="notice notice-error"><p>{ error }</p></div> }
+			{ error && (
+				<div className="bpwc-notice bpwc-notice--error">
+					{ error }
+				</div>
+			) }
 
 			{ loading ? (
-				<Spinner />
+				<div style={ { display: 'flex', justifyContent: 'center', padding: '60px' } }>
+					<Spinner />
+				</div>
 			) : filtered.length === 0 ? (
-				<p>{ __( 'No conversations found.', 'botpress-webchat' ) }</p>
+				<div className="bpwc-empty">
+					<div className="bpwc-empty__icon">💬</div>
+					<h3>{ __( 'No conversations yet', 'botpress-webchat' ) }</h3>
+					<p>{ __( 'Conversations will appear here once visitors start chatting with your bot.', 'botpress-webchat' ) }</p>
+				</div>
 			) : (
-				<table className="wp-list-table widefat fixed striped">
-					<thead>
-						<tr>
-							<th>{ __( 'Date', 'botpress-webchat' ) }</th>
-							<th>{ __( 'Conversation ID', 'botpress-webchat' ) }</th>
-							<th>{ __( 'Channel', 'botpress-webchat' ) }</th>
-							<th>{ __( 'Actions', 'botpress-webchat' ) }</th>
-						</tr>
-					</thead>
-					<tbody>
-						{ filtered.map( ( convo ) => (
-							<tr key={ convo.id }>
-								<td>
-									{ convo.createdAt
-										? new Date( convo.createdAt ).toLocaleString()
-										: '—' }
-								</td>
-								<td>
-									<code>{ convo.id?.substring( 0, 16 ) }...</code>
-								</td>
-								<td>{ convo.channel || convo.integration || '—' }</td>
-								<td>
-									<Button
-										variant="link"
-										onClick={ () => onSelect( convo.id ) }
-									>
-										{ __( 'View', 'botpress-webchat' ) }
-									</Button>
-								</td>
-							</tr>
-						) ) }
-					</tbody>
-				</table>
+				<div className="bpwc-convos__list">
+					{ filtered.map( ( convo ) => (
+						<div
+							key={ convo.id }
+							className="bpwc-convos__item"
+							onClick={ () => onSelect( convo.id ) }
+						>
+							<div className="bpwc-convos__item-icon">
+								<span className="dashicons dashicons-format-chat" />
+							</div>
+							<div className="bpwc-convos__item-body">
+								<div className="bpwc-convos__item-date">
+									{ convo.createdAt ? new Date( convo.createdAt ).toLocaleString() : '—' }
+								</div>
+								<div className="bpwc-convos__item-meta">
+									<span>{ convo.channel || convo.integration || 'webchat' }</span>
+									<span className="bpwc-convos__item-id">{ convo.id?.substring( 0, 20 ) }...</span>
+								</div>
+							</div>
+							<span className="bpwc-convos__item-arrow">›</span>
+						</div>
+					) ) }
+				</div>
 			) }
 
 			{ nextToken && ! loading && (
-				<div className="bpwc-conversations__pagination">
-					<Button
-						variant="secondary"
-						onClick={ () => fetchConversations( nextToken ) }
-					>
+				<div className="bpwc-convos__pagination">
+					<Button variant="secondary" onClick={ () => fetchConversations( nextToken ) }>
 						{ __( 'Load more', 'botpress-webchat' ) }
 					</Button>
 				</div>

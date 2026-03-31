@@ -1,19 +1,15 @@
 /* ============================================
-   Botpress Webchat — Design System Base
+   Botpress Webchat — Design System
+   Version 2.0 — Einheitliches Layout
    ============================================ */
 
 :root {
-	/* Colors — Primary */
 	--bpwc-primary: #3276EA;
 	--bpwc-primary-hover: #2058B8;
 	--bpwc-primary-light: #EEF3FF;
 	--bpwc-primary-border: #C5D7F7;
-
-	/* Colors — Accent (CTA) */
 	--bpwc-accent: #F97316;
 	--bpwc-accent-hover: #EA580C;
-
-	/* Colors — Status */
 	--bpwc-success: #34C759;
 	--bpwc-success-bg: #D4EDDA;
 	--bpwc-success-text: #155724;
@@ -25,21 +21,17 @@
 	--bpwc-warning-text: #F57F17;
 	--bpwc-info-bg: #E8F5E9;
 	--bpwc-info-text: #2E7D32;
-
-	/* Colors — Neutral */
 	--bpwc-text: #1A1A1A;
 	--bpwc-text-secondary: #555;
 	--bpwc-text-muted: #888;
 	--bpwc-text-disabled: #CCC;
-	--bpwc-bg: #F8F9FA;
+	--bpwc-bg: #F0F2F5;
 	--bpwc-bg-card: #FFF;
 	--bpwc-bg-input: #FAFAFA;
-	--bpwc-border: #E4E4E4;
+	--bpwc-border: #E0E0E0;
 	--bpwc-border-light: #F0F0F0;
 	--bpwc-border-hover: #BBB;
 	--bpwc-divider: #EEE;
-
-	/* Spacing */
 	--space-xs: 4px;
 	--space-sm: 8px;
 	--space-md: 12px;
@@ -47,118 +39,276 @@
 	--space-xl: 20px;
 	--space-2xl: 24px;
 	--space-3xl: 32px;
-
-	/* Shadows */
-	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-	--shadow-md: 0 2px 8px rgba(50, 118, 234, 0.1);
+	--space-4xl: 48px;
+	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+	--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
 	--shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.12);
 	--shadow-focus: 0 0 0 2px rgba(50, 118, 234, 0.15);
-
-	/* Radius */
 	--radius-sm: 6px;
 	--radius-md: 8px;
 	--radius-lg: 12px;
 	--radius-xl: 16px;
-	--radius-pill: 12px;
+	--radius-pill: 20px;
 	--radius-round: 50%;
 }
 
 /* ============================================
-   Shared Utilities
+   Page Shell
+   Jede Admin-Seite wrapped sich in .bpwc-page
    ============================================ */
 
-/* Page Shell — full bleed admin page */
 .bpwc-page {
 	margin: -20px 0 0 -20px;
 	min-height: calc(100vh - 32px);
 	background: var(--bpwc-bg);
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	color: var(--bpwc-text);
+	font-size: 14px;
+	line-height: 1.5;
 }
 
-/* Page Header */
-.bpwc-page-header {
+/* ---- Page Header Bar ---- */
+
+.bpwc-page__topbar {
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
+	padding: var(--space-lg) var(--space-4xl);
+	background: var(--bpwc-bg-card);
+	border-bottom: 1px solid var(--bpwc-border);
+	position: sticky;
+	top: 32px; /* Below WP admin bar */
+	z-index: 100;
+}
+
+.bpwc-page__topbar-left {
+	display: flex;
+	align-items: center;
+	gap: var(--space-md);
+}
+
+.bpwc-page__topbar-left .dashicons {
+	color: var(--bpwc-primary);
+	font-size: 22px;
+}
+
+.bpwc-page__title {
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--bpwc-text);
+	margin: 0;
+}
+
+.bpwc-page__breadcrumb {
+	font-size: 13px;
+	color: var(--bpwc-text-muted);
+	margin-left: var(--space-sm);
+}
+
+.bpwc-page__breadcrumb::before {
+	content: "›";
+	margin-right: var(--space-sm);
+}
+
+.bpwc-page__topbar-right {
+	display: flex;
+	align-items: center;
+	gap: var(--space-md);
+}
+
+/* ---- Page Body (below topbar) ---- */
+
+.bpwc-page__body {
+	display: flex;
+	min-height: calc(100vh - 32px - 57px); /* minus admin bar + topbar */
+}
+
+/* ---- Sidebar ---- */
+
+.bpwc-page__sidebar {
+	width: 220px;
+	background: var(--bpwc-bg-card);
+	border-right: 1px solid var(--bpwc-border);
+	flex-shrink: 0;
+	padding: var(--space-xl) 0;
+}
+
+.bpwc-page__nav {
+	display: flex;
+	flex-direction: column;
+}
+
+.bpwc-page__nav-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px var(--space-xl);
+	border: none;
+	background: none;
+	cursor: pointer;
+	font-size: 13px;
+	color: var(--bpwc-text-secondary);
+	text-align: left;
+	transition: all 0.15s;
+	border-left: 3px solid transparent;
+}
+
+.bpwc-page__nav-item:hover {
+	background: var(--bpwc-bg);
+	color: var(--bpwc-text);
+}
+
+.bpwc-page__nav-item.is-active {
+	background: var(--bpwc-primary-light);
+	color: var(--bpwc-primary);
+	border-left-color: var(--bpwc-primary);
+	font-weight: 600;
+}
+
+.bpwc-page__nav-item .dashicons {
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+}
+
+/* ---- Content Area ---- */
+
+.bpwc-page__content {
+	flex: 1;
+	min-width: 0;
+	padding: var(--space-3xl) var(--space-4xl);
+}
+
+.bpwc-page__content--narrow {
+	max-width: 960px;
+}
+
+/* ---- Content Header ---- */
+
+.bpwc-page__content-header {
+	display: flex;
+	align-items: flex-start;
 	justify-content: space-between;
 	margin-bottom: var(--space-2xl);
 }
 
-.bpwc-page-header h1 {
-	margin: 0;
-	font-size: 24px;
+.bpwc-page__content-title {
+	font-size: 22px;
 	font-weight: 700;
 	color: var(--bpwc-text);
+	margin: 0 0 var(--space-xs);
 }
 
-/* Hide WP notices */
-#bpwc-admin-root ~ .notice,
-#bpwc-admin-root ~ .updated,
-#bpwc-admin-root ~ .update-nag,
-#bpwc-knowledge-root ~ .notice,
-#bpwc-conversations-root ~ .notice,
-#wpbody-content > .notice,
-#wpbody-content > .updated,
-#wpbody-content > .update-nag {
-	display: none !important;
+.bpwc-page__content-desc {
+	font-size: 14px;
+	color: var(--bpwc-text-muted);
+	margin: 0;
 }
 
-/* ---- Buttons ---- */
+/* ---- Main + Preview Layout ---- */
 
-.bpwc-btn {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--space-sm);
-	border-radius: var(--radius-sm);
-	font-weight: 600;
-	font-size: 13px;
-	padding: 8px 16px;
-	cursor: pointer;
-	transition: all 0.15s;
-	border: none;
-	line-height: 1.4;
+.bpwc-page__main {
+	display: flex;
+	gap: var(--space-3xl);
 }
 
-.bpwc-btn--primary {
-	background: var(--bpwc-accent);
-	color: #fff;
+.bpwc-page__form {
+	flex: 1;
+	min-width: 0;
+	max-width: 700px;
 }
 
-.bpwc-btn--primary:hover {
-	background: var(--bpwc-accent-hover);
+.bpwc-page__preview {
+	width: 300px;
+	flex-shrink: 0;
+	position: sticky;
+	top: 120px;
+	align-self: flex-start;
 }
 
-.bpwc-btn--secondary {
+@media (max-width: 1100px) {
+	.bpwc-page__preview { display: none; }
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+
+.bpwc-btn-primary {
+	background: var(--bpwc-accent) !important;
+	border-color: var(--bpwc-accent) !important;
+	border-radius: var(--radius-sm) !important;
+	padding: 8px 20px !important;
+	font-weight: 600 !important;
+	font-size: 13px !important;
+	color: #fff !important;
+}
+
+.bpwc-btn-primary:hover {
+	background: var(--bpwc-accent-hover) !important;
+	border-color: var(--bpwc-accent-hover) !important;
+}
+
+.bpwc-btn-blue {
+	background: var(--bpwc-primary) !important;
+	border-color: var(--bpwc-primary) !important;
+	border-radius: var(--radius-md) !important;
+	padding: 8px var(--space-xl) !important;
+	font-weight: 600 !important;
+	font-size: 14px !important;
+	color: #fff !important;
+	height: auto !important;
+}
+
+.bpwc-btn-blue:hover {
+	background: var(--bpwc-primary-hover) !important;
+}
+
+/* ============================================
+   Cards
+   ============================================ */
+
+.bpwc-card {
 	background: var(--bpwc-bg-card);
-	color: var(--bpwc-text-secondary);
 	border: 1px solid var(--bpwc-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-lg) var(--space-xl);
+	transition: all 0.15s;
 }
 
-.bpwc-btn--secondary:hover {
-	border-color: var(--bpwc-border-hover);
-	color: var(--bpwc-text);
+.bpwc-card:hover {
+	border-color: var(--bpwc-primary);
+	box-shadow: var(--shadow-md);
+	transform: translateY(-1px);
 }
 
-.bpwc-btn--link {
-	background: none;
-	color: var(--bpwc-primary);
-	padding: 0;
+.bpwc-card--inactive { opacity: 0.45; }
+
+/* ============================================
+   Panels (form containers)
+   ============================================ */
+
+.bpwc-panel {
+	background: var(--bpwc-bg-card);
+	border: 1px solid var(--bpwc-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-2xl);
+	margin-bottom: var(--space-lg);
 }
 
-.bpwc-btn--link:hover {
-	color: var(--bpwc-primary-hover);
+.bpwc-panel h2 { margin: 0 0 var(--space-xl); font-size: 18px; font-weight: 600; color: var(--bpwc-text); }
+.bpwc-panel h3 { margin: 0 0 var(--space-sm); font-size: 15px; font-weight: 600; color: var(--bpwc-text); }
+
+.bpwc-panel--highlight {
+	border-color: #E8D5B7;
+	background: #FFFBF5;
 }
 
-.bpwc-btn--destructive {
-	background: none;
-	color: var(--bpwc-error);
-	padding: 4px 8px;
-}
+.bpwc-panel--highlight h3 { color: #B8860B; }
 
-.bpwc-btn--destructive:hover {
-	background: var(--bpwc-error-bg);
-}
-
-/* ---- Notices ---- */
+/* ============================================
+   Notices
+   ============================================ */
 
 .bpwc-notice {
 	display: flex;
@@ -170,114 +320,28 @@
 	margin-bottom: var(--space-lg);
 }
 
-.bpwc-notice--success {
-	background: var(--bpwc-success-bg);
-	color: var(--bpwc-success-text);
-}
+.bpwc-notice--success { background: var(--bpwc-success-bg); color: var(--bpwc-success-text); }
+.bpwc-notice--error { background: var(--bpwc-error-bg); color: var(--bpwc-error-text); }
 
-.bpwc-notice--error {
-	background: var(--bpwc-error-bg);
-	color: var(--bpwc-error-text);
-}
-
-.bpwc-notice--warning {
-	background: var(--bpwc-warning-bg);
-	color: var(--bpwc-warning-text);
-}
-
-.bpwc-notice__close {
-	background: none;
-	border: none;
-	font-size: 18px;
-	cursor: pointer;
-	color: inherit;
-	opacity: 0.6;
-	padding: 0;
-}
-
-.bpwc-notice__close:hover {
-	opacity: 1;
-}
-
-/* ---- Badges ---- */
+/* ============================================
+   Badges
+   ============================================ */
 
 .bpwc-badge {
 	display: inline-block;
 	padding: var(--space-xs) var(--space-md);
 	border-radius: var(--radius-pill);
 	font-weight: 600;
-	font-size: 13px;
+	font-size: 12px;
 }
 
-.bpwc-badge--success {
-	background: var(--bpwc-success-bg);
-	color: var(--bpwc-success-text);
-}
+.bpwc-badge--success { background: var(--bpwc-success-bg); color: var(--bpwc-success-text); }
+.bpwc-badge--error { background: var(--bpwc-error-bg); color: var(--bpwc-error-text); }
+.bpwc-badge--muted { background: #F0F0F0; color: var(--bpwc-text-muted); }
 
-.bpwc-badge--error {
-	background: var(--bpwc-error-bg);
-	color: var(--bpwc-error-text);
-}
-
-/* ---- Cards ---- */
-
-.bpwc-card {
-	background: var(--bpwc-bg-card);
-	border: 1px solid var(--bpwc-border);
-	border-radius: var(--radius-lg);
-	padding: var(--space-lg) var(--space-xl);
-	transition: all 0.15s;
-}
-
-.bpwc-card--interactive {
-	cursor: pointer;
-}
-
-.bpwc-card--interactive:hover {
-	border-color: var(--bpwc-primary);
-	box-shadow: var(--shadow-md);
-	transform: translateY(-1px);
-}
-
-.bpwc-card--selected {
-	border-color: var(--bpwc-primary);
-	background: var(--bpwc-primary-light);
-}
-
-.bpwc-card--inactive {
-	opacity: 0.4;
-}
-
-/* ---- Panels ---- */
-
-.bpwc-panel {
-	background: var(--bpwc-bg-card);
-	border: 1px solid var(--bpwc-border);
-	border-radius: var(--radius-lg);
-	padding: var(--space-2xl);
-	margin-bottom: var(--space-lg);
-}
-
-.bpwc-panel--highlight {
-	border-color: #E8D5B7;
-	background: #FFFBF5;
-}
-
-.bpwc-panel h2 {
-	margin: 0 0 var(--space-xl);
-	font-size: 18px;
-	font-weight: 600;
-	color: var(--bpwc-text);
-}
-
-.bpwc-panel h3 {
-	margin: 0 0 var(--space-sm);
-	font-size: 15px;
-	font-weight: 600;
-	color: var(--bpwc-text);
-}
-
-/* ---- Toggle ---- */
+/* ============================================
+   Toggle
+   ============================================ */
 
 .bpwc-toggle {
 	width: 44px;
@@ -292,9 +356,7 @@
 	flex-shrink: 0;
 }
 
-.bpwc-toggle.is-active {
-	background: var(--bpwc-success);
-}
+.bpwc-toggle.is-active { background: var(--bpwc-success); }
 
 .bpwc-toggle__knob {
 	display: block;
@@ -309,36 +371,22 @@
 	box-shadow: var(--shadow-sm);
 }
 
-.bpwc-toggle.is-active .bpwc-toggle__knob {
-	transform: translateX(20px);
-}
+.bpwc-toggle.is-active .bpwc-toggle__knob { transform: translateX(20px); }
 
-/* ---- Section ---- */
+/* ============================================
+   Section
+   ============================================ */
 
-.bpwc-section h2 {
-	font-size: 18px;
-	font-weight: 600;
-	margin: 0 0 var(--space-xs);
-	color: var(--bpwc-text);
-}
+.bpwc-section h2 { font-size: 18px; font-weight: 600; margin: 0 0 var(--space-xs); color: var(--bpwc-text); }
+.bpwc-section__desc { color: var(--bpwc-text-muted); margin: 0 0 var(--space-xl); font-size: 13px; }
+.bpwc-section hr { margin: 28px 0 var(--space-xl); border: none; border-top: 1px solid var(--bpwc-divider); }
+.bpwc-section h3 { font-size: 15px; font-weight: 600; margin: 0 0 var(--space-lg); color: var(--bpwc-text); }
 
-.bpwc-section__desc {
-	color: var(--bpwc-text-muted);
-	margin: 0 0 var(--space-xl);
-	font-size: 13px;
-}
+/* ============================================
+   Fields
+   ============================================ */
 
-.bpwc-section hr {
-	margin: 28px 0 var(--space-xl);
-	border: none;
-	border-top: 1px solid var(--bpwc-divider);
-}
-
-/* ---- Field ---- */
-
-.bpwc-field {
-	margin-bottom: var(--space-xl);
-}
+.bpwc-field { margin-bottom: var(--space-xl); }
 
 .bpwc-field-row {
 	display: grid;
@@ -348,12 +396,12 @@
 }
 
 @media (max-width: 1200px) {
-	.bpwc-field-row {
-		grid-template-columns: 1fr;
-	}
+	.bpwc-field-row { grid-template-columns: 1fr; }
 }
 
-/* ---- Feature Card ---- */
+/* ============================================
+   Feature Card
+   ============================================ */
 
 .bpwc-feature-card {
 	background: var(--bpwc-bg-card);
@@ -363,75 +411,33 @@
 	margin-bottom: var(--space-md);
 }
 
-/* ---- Table ---- */
+/* ============================================
+   Hide WP admin notices
+   ============================================ */
 
-.bpwc-table {
-	width: 100%;
-	border-collapse: collapse;
-	font-size: 13px;
+#bpwc-admin-root ~ .notice,
+#bpwc-admin-root ~ .updated,
+#bpwc-admin-root ~ .update-nag,
+#bpwc-knowledge-root ~ .notice,
+#bpwc-conversations-root ~ .notice,
+#wpbody-content > .notice,
+#wpbody-content > .updated,
+#wpbody-content > .update-nag {
+	display: none !important;
 }
 
-.bpwc-table th {
-	background: var(--bpwc-bg);
-	padding: 10px var(--space-md);
-	text-align: left;
-	font-weight: 600;
-	font-size: 12px;
-	text-transform: uppercase;
-	color: var(--bpwc-text-secondary);
-	border-bottom: 2px solid var(--bpwc-border);
-	letter-spacing: 0.3px;
-}
+/* ============================================
+   Empty State
+   ============================================ */
 
-.bpwc-table td {
-	padding: 10px var(--space-md);
-	border-bottom: 1px solid var(--bpwc-border-light);
-	vertical-align: middle;
-}
-
-.bpwc-table tr:hover td {
-	background: #FAFBFC;
-}
-
-/* ---- Pagination ---- */
-
-.bpwc-pagination {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: var(--space-md) 0;
-	margin-top: var(--space-lg);
-	border-top: 1px solid var(--bpwc-divider);
-	font-size: 13px;
-	color: var(--bpwc-text-muted);
-}
-
-.bpwc-pagination__buttons {
-	display: flex;
-	gap: var(--space-xs);
-}
-
-.bpwc-pagination__btn {
-	min-width: 32px;
-	height: 32px;
-	border-radius: var(--radius-sm);
-	border: 1px solid var(--bpwc-border);
+.bpwc-empty {
+	text-align: center;
+	padding: var(--space-4xl) var(--space-xl);
 	background: var(--bpwc-bg-card);
-	font-size: 13px;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	transition: all 0.15s;
+	border: 2px dashed var(--bpwc-border);
+	border-radius: var(--radius-lg);
 }
 
-.bpwc-pagination__btn:hover {
-	border-color: var(--bpwc-primary);
-	color: var(--bpwc-primary);
-}
-
-.bpwc-pagination__btn.is-active {
-	background: var(--bpwc-primary);
-	color: #fff;
-	border-color: var(--bpwc-primary);
-}
+.bpwc-empty__icon { font-size: 48px; margin-bottom: var(--space-lg); }
+.bpwc-empty h3 { margin: 0 0 var(--space-sm); font-size: 18px; color: var(--bpwc-text); }
+.bpwc-empty p { margin: 0 0 var(--space-2xl); color: var(--bpwc-text-muted); max-width: 400px; margin-left: auto; margin-right: auto; }

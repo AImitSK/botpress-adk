@@ -25,6 +25,10 @@ class Plugin {
 		add_action( 'rest_api_init', [ $this, 'register_rest_routes' ] );
 
 		Cpt\Cpt_Manager::init();
+		Hooks::init();
+		Shortcode::init();
+
+		do_action( 'bpwc_plugin_loaded' );
 	}
 
 	public function load_textdomain(): void {
@@ -39,5 +43,6 @@ class Plugin {
 		( new Rest\Rest_Country_Reps() )->register_routes();
 		( new Rest\Rest_Pages() )->register_routes();
 		( new Rest\Rest_Site_Info() )->register_routes();
+		( new Rest\Rest_Forms() )->register_routes();
 	}
 }

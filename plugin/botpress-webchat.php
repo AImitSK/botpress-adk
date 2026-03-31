@@ -42,6 +42,10 @@ spl_autoload_register( function ( string $class ) {
 	}
 } );
 
+// Activation / Deactivation.
+register_activation_hook( __FILE__, [ \Bpwc\Activation::class, 'activate' ] );
+register_deactivation_hook( __FILE__, [ \Bpwc\Activation::class, 'deactivate' ] );
+
 // Boot plugin.
 add_action( 'plugins_loaded', function () {
 	\Bpwc\Plugin::instance();

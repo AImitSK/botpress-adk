@@ -41,7 +41,11 @@ export default defineConfig({
   },
 
   user: {
-    state: z.object({}),
+    state: z.object({
+      pageTitle: z.string().default(""),
+      pageUrl: z.string().default(""),
+      pageType: z.string().default(""),
+    }),
   },
 
   dependencies: {

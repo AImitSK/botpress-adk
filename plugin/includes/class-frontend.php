@@ -24,7 +24,8 @@ class Frontend {
 			return;
 		}
 
-		$config = self::build_config( $settings );
+		$config     = self::build_config( $settings );
+		$config     = apply_filters( 'bpwc_webchat_config', $config, $settings );
 		$config_json = wp_json_encode( $config );
 		$custom_css  = esc_html( $settings['styling']['custom_css'] );
 
@@ -39,27 +40,40 @@ class Frontend {
 		<?php
 	}
 
+	public static function render_shortcode( array $atts = [] ): string {
+		$settings = Settings::get_all();
+
+		$webchat_id = $settings['connection']['webchat_id'];
+		if ( empty( $webchat_id ) ) {
+			return '';
+		}
+
+		$config      = self::build_config( $settings );
+		$config      = apply_filters( 'bpwc_webchat_config', $config, $settings );
+		$config_json = wp_json_encode( $config );
+
+		return '<script src="https://cdn.botpress.cloud/webchat/v2.3/inject.js"></script>'
+			. '<script>window.botpress.init(' . $config_json . ');</script>';
+	}
+
 	private static function should_show( array $settings ): bool {
-		$show_on = $settings['general']['show_on'] ?? 'all';
+		$should_show = true;
+		$show_on     = $settings['general']['show_on'] ?? 'all';
 
-		if ( 'all' === $show_on ) {
-			return true;
+		if ( 'all' !== $show_on ) {
+			$rules      = $settings['general']['page_rules'] ?? [];
+			$current_id = get_queried_object_id();
+
+			if ( ! empty( $rules ) ) {
+				if ( 'include' === $show_on ) {
+					$should_show = in_array( $current_id, $rules, true );
+				} elseif ( 'exclude' === $show_on ) {
+					$should_show = ! in_array( $current_id, $rules, true );
+				}
+			}
 		}
 
-		$rules = $settings['general']['page_rules'] ?? [];
-		if ( empty( $rules ) ) {
-			return true;
-		}
-
-		$current_id = get_queried_object_id();
-		if ( 'include' === $show_on ) {
-			return in_array( $current_id, $rules, true );
-		}
-		if ( 'exclude' === $show_on ) {
-			return ! in_array( $current_id, $rules, true );
-		}
-
-		return true;
+		return (bool) apply_filters( 'bpwc_should_show_webchat', $should_show, $settings );
 	}
 
 	private static function build_config( array $settings ): array {
@@ -101,6 +115,35 @@ class Frontend {
 			$config['composerPlaceholder'] = $styling['greeting_message'];
 		}
 
+		// Page context for the bot.
+		$context = self::get_page_context();
+		$context = apply_filters( 'bpwc_webchat_context', $context, $settings );
+		if ( ! empty( $context ) ) {
+			$config['userData'] = $context;
+		}
+
 		return $config;
+	}
+
+	private static function get_page_context(): array {
+		$context = [];
+
+		if ( is_singular() ) {
+			$post = get_queried_object();
+			if ( $post instanceof \WP_Post ) {
+				$context['pageTitle'] = $post->post_title;
+				$context['pageUrl']   = get_permalink( $post );
+				$context['pageType']  = $post->post_type;
+			}
+		} elseif ( is_archive() ) {
+			$context['pageTitle'] = get_the_archive_title();
+			$context['pageUrl']   = home_url( add_query_arg( [] ) );
+			$context['pageType']  = 'archive';
+		} else {
+			$context['pageUrl']  = home_url( add_query_arg( [] ) );
+			$context['pageType'] = 'other';
+		}
+
+		return $context;
 	}
 }

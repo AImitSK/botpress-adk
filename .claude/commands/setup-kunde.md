@@ -92,13 +92,15 @@ return [
 Erstelle ein ZIP-Archiv mit dem Plugin + der Config:
 
 ```bash
-mkdir -p output/{KUNDENNAME}
-# developer-config.php ist schon da
+mkdir -p output/{KUNDENNAME}/botpress-webchat
 # Plugin-Dateien kopieren (ohne node_modules, ohne .git)
-cp -r plugin/includes plugin/src plugin/build plugin/botpress-webchat.php plugin/uninstall.php plugin/composer.json plugin/package.json output/{KUNDENNAME}/plugin/
-cp output/{KUNDENNAME}/developer-config.php output/{KUNDENNAME}/plugin/
-cd output && zip -r "{KUNDENNAME}-botpress-webchat.zip" "{KUNDENNAME}/plugin/"
+cp -r plugin/includes plugin/src plugin/build plugin/botpress-webchat.php plugin/uninstall.php plugin/composer.json plugin/package.json output/{KUNDENNAME}/botpress-webchat/
+# developer-config.php mit Kundenwerten rein
+cp output/{KUNDENNAME}/developer-config.php output/{KUNDENNAME}/botpress-webchat/
+cd output/{KUNDENNAME} && zip -r "../{KUNDENNAME}-botpress-webchat.zip" "botpress-webchat/"
 ```
+
+Der ZIP-Name `botpress-webchat.zip` ist wichtig — WordPress erkennt den Plugin-Ordner am Verzeichnisnamen im ZIP.
 
 ### Schritt 8: Zusammenfassung
 
@@ -116,8 +118,7 @@ Sprache:    {SPRACHE}
 
 Der Kunde muss:
 1. Plugin in WordPress installieren (ZIP hochladen)
-2. developer-config.php per FTP in den Plugin-Ordner legen
-   ODER im Plugin hochladen
+2. Aktivieren
 3. Fertig — Bot ist automatisch verbunden
 ```
 

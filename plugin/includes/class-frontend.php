@@ -27,7 +27,7 @@ class Frontend {
 		$config      = self::build_config( $settings );
 		$config      = apply_filters( 'bpwc_webchat_config', $config, $settings );
 		$config_json = wp_json_encode( $config );
-		$custom_css  = esc_html( $settings['styling']['custom_css'] );
+		$custom_css  = esc_html( $settings['appearance']['custom_css'] ?? '' );
 
 		// Page context to send as user data.
 		$context      = self::get_page_context();
@@ -85,7 +85,9 @@ class Frontend {
 	}
 
 	private static function build_config( array $settings ): array {
-		$styling = $settings['styling'];
+		$identity   = $settings['identity'];
+		$appearance = $settings['appearance'];
+		$features   = $settings['features'];
 
 		$config = [
 			'clientId' => $settings['connection']['webchat_id'],
@@ -98,51 +100,61 @@ class Frontend {
 		// Webchat v3 configuration object.
 		$configuration = [];
 
-		if ( ! empty( $styling['primary_color'] ) && '#0066FF' !== $styling['primary_color'] ) {
-			$configuration['color'] = $styling['primary_color'];
+		// Identity.
+		if ( ! empty( $identity['bot_name'] ) ) {
+			$configuration['botName'] = $identity['bot_name'];
 		}
-		if ( ! empty( $styling['font_family'] ) && 'inherit' !== $styling['font_family'] ) {
-			$configuration['fontFamily'] = $styling['font_family'];
+		if ( ! empty( $identity['bot_description'] ) ) {
+			$configuration['botDescription'] = $identity['bot_description'];
 		}
-		if ( ! empty( $styling['bot_name'] ) ) {
-			$configuration['botName'] = $styling['bot_name'];
+		if ( ! empty( $identity['bot_avatar_url'] ) ) {
+			$configuration['botAvatar'] = $identity['bot_avatar_url'];
 		}
-		if ( ! empty( $styling['bot_avatar_url'] ) ) {
-			$configuration['botAvatar'] = $styling['bot_avatar_url'];
+		if ( ! empty( $identity['composer_placeholder'] ) ) {
+			$configuration['composerPlaceholder'] = $identity['composer_placeholder'];
 		}
-		if ( ! empty( $styling['greeting_message'] ) ) {
-			$configuration['composerPlaceholder'] = $styling['greeting_message'];
+		if ( ! empty( $identity['footer'] ) ) {
+			$configuration['footer'] = $identity['footer'];
 		}
-
-		// Theme mode: light/dark based on background color.
-		if ( ! empty( $styling['background_color'] ) && '#FFFFFF' !== $styling['background_color'] ) {
-			// Dark backgrounds → dark mode.
-			$hex = ltrim( $styling['background_color'], '#' );
-			$r   = hexdec( substr( $hex, 0, 2 ) );
-			$g   = hexdec( substr( $hex, 2, 2 ) );
-			$b   = hexdec( substr( $hex, 4, 2 ) );
-			if ( ( $r + $g + $b ) / 3 < 128 ) {
-				$configuration['themeMode'] = 'dark';
-			}
+		if ( ! empty( $identity['fab_avatar_url'] ) ) {
+			$configuration['fabImage'] = $identity['fab_avatar_url'];
 		}
 
-		// Position maps to variant in v3.
-		if ( ! empty( $styling['position'] ) && 'left' === $styling['position'] ) {
-			// v3 doesn't have left/right — handled via custom CSS.
+		// Contact info.
+		if ( ! empty( $identity['contact_email'] ) ) {
+			$configuration['email'] = [ 'title' => 'Email', 'link' => 'mailto:' . $identity['contact_email'] ];
+		}
+		if ( ! empty( $identity['contact_phone'] ) ) {
+			$configuration['phone'] = [ 'title' => 'Phone', 'link' => 'tel:' . $identity['contact_phone'] ];
+		}
+		if ( ! empty( $identity['contact_website'] ) ) {
+			$configuration['website'] = [ 'title' => 'Website', 'link' => $identity['contact_website'] ];
+		}
+		if ( ! empty( $identity['terms_of_service_url'] ) ) {
+			$configuration['termsOfService'] = [ 'title' => 'Terms', 'link' => $identity['terms_of_service_url'] ];
+		}
+		if ( ! empty( $identity['privacy_policy_url'] ) ) {
+			$configuration['privacyPolicy'] = [ 'title' => 'Privacy', 'link' => $identity['privacy_policy_url'] ];
 		}
 
-		if ( ! empty( $styling['custom_css'] ) ) {
-			// Custom CSS in v3 requires an external URL or inline style tag.
-			// We handle this via the <style> tag in render_webchat().
+		// Appearance.
+		if ( ! empty( $appearance['primary_color'] ) ) {
+			$configuration['color'] = $appearance['primary_color'];
 		}
-
-		if ( ! empty( $configuration ) ) {
-			$config['configuration'] = $configuration;
+		if ( ! empty( $appearance['font_family'] ) ) {
+			$configuration['fontFamily'] = $appearance['font_family'];
 		}
+		$configuration['themeMode']     = $appearance['theme_mode'] ?? 'light';
+		$configuration['headerVariant'] = $appearance['header_variant'] ?? 'glass';
+		$configuration['variant']       = $appearance['message_variant'] ?? 'solid';
+		$configuration['radius']        = (float) ( $appearance['corner_radius'] ?? 1 );
 
-		// Page context as user data.
-		$context = self::get_page_context();
-		$context = apply_filters( 'bpwc_webchat_context', $context, $settings );
+		// Features.
+		$configuration['feedbackEnabled']  = ! empty( $features['message_feedback'] );
+		$configuration['allowFileUpload']  = ! empty( $features['allow_file_upload'] );
+		$configuration['storageLocation']  = $features['chat_history_reset'] ?? 'localStorage';
+
+		$config['configuration'] = $configuration;
 
 		return $config;
 	}

@@ -17,13 +17,24 @@ class Admin_Page {
 	}
 
 	public static function render(): void {
-		echo '<div class="wrap"><div id="bpwc-admin-root"></div></div>';
+		echo '<div id="bpwc-admin-root"></div>';
+	}
+
+	public static function hide_notices(): void {
+		remove_all_actions( 'admin_notices' );
+		remove_all_actions( 'all_admin_notices' );
 	}
 
 	public static function enqueue_assets( string $hook ): void {
 		if ( 'toplevel_page_botpress-webchat' !== $hook ) {
 			return;
 		}
+
+		// Hide all WP admin notices on our page.
+		add_action( 'in_admin_header', [ self::class, 'hide_notices' ], 999 );
+
+		// Load WP Media Library for image pickers.
+		wp_enqueue_media();
 
 		$asset_file = BPWC_PLUGIN_DIR . 'build/index.asset.php';
 

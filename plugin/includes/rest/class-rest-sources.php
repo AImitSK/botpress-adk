@@ -66,13 +66,13 @@ class Rest_Sources {
 		register_rest_route( self::NAMESPACE, '/bot/sources', [
 			'methods'             => \WP_REST_Server::READABLE,
 			'callback'            => [ $this, 'bot_list_sources' ],
-			'permission_callback' => [ Rest_Base_Controller::class, 'check_bot_token' ],
+			'permission_callback' => [ $this, 'check_bot_token' ],
 		] );
 
 		register_rest_route( self::NAMESPACE, '/bot/query/(?P<id>\d+)', [
 			'methods'             => \WP_REST_Server::READABLE,
 			'callback'            => [ $this, 'bot_query_source' ],
-			'permission_callback' => [ Rest_Base_Controller::class, 'check_bot_token' ],
+			'permission_callback' => [ $this, 'check_bot_token' ],
 			'args'                => [
 				'search' => [
 					'type'              => 'string',
@@ -85,6 +85,10 @@ class Rest_Sources {
 
 	public function check_admin(): bool {
 		return current_user_can( 'manage_options' );
+	}
+
+	public function check_bot_token( \WP_REST_Request $request ): bool|\WP_Error {
+		return \Bpwc\Rest_Auth::verify_bearer_token( $request );
 	}
 
 	public function list_sources(): \WP_REST_Response {

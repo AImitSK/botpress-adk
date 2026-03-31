@@ -60,6 +60,16 @@ export default function ConnectionTab( { settings, onSave, saving } ) {
 				/>
 			</div>
 
+			<div className="bpwc-field">
+				<TextControl
+					label={ __( 'Botpress Personal Access Token', 'botpress-webchat' ) }
+					value={ conn.botpress_pat }
+					onChange={ ( v ) => update( 'botpress_pat', v ) }
+					type="password"
+					help={ __( 'PAT from Botpress Cloud — required for the Conversation Viewer.', 'botpress-webchat' ) }
+				/>
+			</div>
+
 			<h3>{ __( 'API Token', 'botpress-webchat' ) }</h3>
 			<p className="description">
 				{ __( 'Generate a token for the Botpress Agent to authenticate with your WordPress REST API.', 'botpress-webchat' ) }

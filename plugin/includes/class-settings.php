@@ -11,8 +11,9 @@ class Settings {
 		'connection' => [
 			'bot_id'     => '',
 			'webchat_id' => '',
-			'api_token'  => '',
-			'wp_api_url' => '',
+			'api_token'      => '',
+			'wp_api_url'     => '',
+			'botpress_pat'   => '',
 		],
 		'styling' => [
 			'primary_color'    => '#0066FF',

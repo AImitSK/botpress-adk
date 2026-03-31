@@ -1,0 +1,96 @@
+.bpwc-conversations {
+	max-width: 1000px;
+	margin-top: 20px;
+}
+
+.bpwc-conversations__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+}
+
+.bpwc-conversations__header h2 {
+	margin: 0;
+}
+
+.bpwc-conversations__pagination {
+	margin-top: 16px;
+}
+
+.bpwc-filters {
+	display: flex;
+	gap: 16px;
+	align-items: flex-end;
+	margin-bottom: 16px;
+}
+
+.bpwc-filters__search {
+	flex: 1;
+}
+
+/* Detail view */
+.bpwc-detail {
+	max-width: 800px;
+	margin-top: 20px;
+}
+
+.bpwc-detail__header {
+	margin-bottom: 24px;
+}
+
+.bpwc-detail__header h2 {
+	margin: 8px 0 4px;
+}
+
+.bpwc-detail__messages {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 16px;
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	max-height: 600px;
+	overflow-y: auto;
+}
+
+/* Message bubbles */
+.bpwc-bubble {
+	max-width: 75%;
+	padding: 10px 14px;
+	border-radius: 12px;
+	line-height: 1.5;
+}
+
+.bpwc-bubble--user {
+	align-self: flex-start;
+	background: #e3f2fd;
+	border-bottom-left-radius: 2px;
+}
+
+.bpwc-bubble--bot {
+	align-self: flex-end;
+	background: #ffffff;
+	border: 1px solid #ddd;
+	border-bottom-right-radius: 2px;
+}
+
+.bpwc-bubble__label {
+	font-size: 11px;
+	font-weight: 600;
+	color: #666;
+	margin-bottom: 4px;
+}
+
+.bpwc-bubble__time {
+	margin-left: 8px;
+	font-weight: 400;
+	color: #999;
+}
+
+.bpwc-bubble__text {
+	font-size: 14px;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}

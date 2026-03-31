@@ -1,63 +1,79 @@
-# Botpress für WordPress
+# Botpress Webchat for WordPress
 
-WordPress-Plugin + Botpress ADK Agent — der komplette Chatbot-Lebenszyklus für dein WordPress-Intranet.
+WordPress-Plugin + Botpress ADK Agent — ein KI-Support-Bot für Webseitenbesucher.
 
 ## Was macht das Projekt?
 
-**Botpress für WordPress** verbindet deine WordPress-Website mit Botpress Cloud und deckt den gesamten Chatbot-Lebenszyklus an einem Ort ab:
+**Botpress Webchat for WordPress** ist ein wiederverwendbares Plugin, das einen KI-gestützten Support-Bot auf jeder WordPress-Website bereitstellt. Der Bot hilft Besuchern bei:
 
-- **Verbinden & verwalten:** Verknüpfe deinen Botpress-Workspace, konfiguriere Bots, Kanäle und Integrationen direkt im WP-Adminbereich
-- **Erstellen & deployen:** Gerüste und deploye Agenten über das Botpress ADK direkt aus deinem Entwicklungs-Workflow
-- **Gestalten & einbetten:** Passe Farben, Schriften, Position und Verhalten des Webchat-Widgets an — ganz ohne Code
-- **Erweitern:** Nutze WP-Actions und -Filter, um Benutzerdaten, Seitenkontext oder eigene Variablen an deinen Bot zu übergeben
+- **Ansprechpartner finden** — nach Name, Abteilung oder Aufgabe suchen
+- **Nachrichten übermitteln** — Nachrichten an Mitarbeiter weiterleiten (via SendGrid)
+- **Produktberatung** — Produkte empfehlen und beraten
+- **Downloads** — Datenblätter, Broschüren und Dokumente finden
+- **Ländervertretungen** — internationale Kontakte und Vertretungen suchen
+- **Produktanfragen** — Leads erfassen und auf passende Formulare verweisen
+- **Unternehmensfragen** — allgemeine Fragen zur Firma beantworten
 
 ## Architektur
 
-Das Projekt besteht aus zwei Teilen:
+```
+Besucher ──► Webchat Widget ──► Botpress Cloud (Agent)
+                                       │
+                                       ├──► WordPress REST API (Kontakte, Produkte, Downloads, ...)
+                                       ├──► Botpress Knowledge Base (Website-Inhalte, FAQ)
+                                       └──► SendGrid API (E-Mail-Versand)
+```
 
 ### 1. WordPress Plugin (`/plugin`)
-- Settings-Seite im WP-Admin (Workspace-Verbindung, Bot-Konfiguration)
+- Settings-Seite im WP-Admin (React): Connection, Styling, Data Sources
 - Webchat-Widget Einbettung mit Customizer (Farben, Schriften, Position)
-- WP-Actions und -Filter für Kontext-Übergabe (Benutzer, Seite, Custom Vars)
-- Kompatibel mit WordPress 6.x+, klassische Themes und Full Site Editing (FSE)
+- Custom Post Types: Kontakte, Produkte, Downloads, Ländervertretungen (optional)
+- REST-Endpoints unter `bpwc/v1/bot/*` mit Bearer-Token Auth
+- WP-Actions/Filter für Extensibility
+- Kompatibel mit klassischen Themes und Full Site Editing (FSE)
 
 ### 2. Botpress ADK Agent (`/agent`)
-- TypeScript-Agent auf Botpress ADK (beta)
-- Datenquelle: WordPress REST API (`/wp-json/wp/v2/`)
-- Tools für Kontaktsuche, Dokumentensuche, E-Mail-Versand
-- ACF-Felder für Ansprechpartner (Custom Post Type)
+- TypeScript-Agent auf Botpress ADK
+- Tools für: Kontaktsuche, Produktsuche, Downloads, Ländervertretungen, Seitensuche
+- E-Mail-Versand via SendGrid API
+- Knowledge Base für Website-Inhalte
+- Konfigurierbar: Sprache, Firmenname, Datenquellen
 
 ## Tech Stack
 
 | Komponente | Technologie |
 |------------|-------------|
-| WordPress Plugin | PHP 8.x, WordPress 6.x+, Gutenberg/FSE |
-| Admin UI | React (WP Scripts) |
+| WordPress Plugin | PHP 8.x, WordPress 6.x+ |
+| Admin UI | React (@wordpress/scripts) |
 | Chatbot Agent | TypeScript, Botpress ADK, Bun |
-| Datenquelle | WordPress REST API + ACF |
-| Chat Widget | Botpress Webchat |
+| Datenquellen | WordPress REST API + Botpress Knowledge Base |
+| E-Mail | SendGrid API |
+| Chat Widget | Botpress Webchat v2 |
 
 ## Voraussetzungen
 
-- WordPress 6.x+
-- PHP 8.0+
+- WordPress 6.x+ / PHP 8.0+
 - Node.js 22+ / Bun 1.3.9+
 - Botpress Cloud Account
+- SendGrid Account (für E-Mail-Versand)
+- Docker (für lokale Entwicklung)
 
 ## Entwicklung
 
 ```bash
+# Docker-WordPress starten
+docker compose up -d        # WordPress auf http://localhost:8080 (admin/admin)
+
 # Agent entwickeln
 cd agent
 bun install
-adk dev          # Dev-Server auf http://localhost:3001
-adk chat         # Terminal-Chat zum Testen
+adk dev                     # Dev-Server mit Hot Reload
 
 # Plugin entwickeln
 cd plugin
 composer install
 npm install
-npm run build    # oder npm run start für Watch-Mode
+npm run build               # oder: npm run start (Watch-Mode)
 ```
 
 ## Projektstruktur
@@ -65,7 +81,9 @@ npm run build    # oder npm run start für Watch-Mode
 ```
 botpress-adk/
 ├── README.md
-├── CLAUDE.md
+├── CLAUDE.md               ← Konventionen und Dev-Setup
+├── PLAN.md                 ← Implementierungsplan (4 Phasen)
+├── docker-compose.yml      ← WordPress + MySQL Dev-Environment
 ├── agent/                  ← Botpress ADK Agent
 │   ├── agent.config.ts
 │   ├── agent.json
@@ -73,16 +91,23 @@ botpress-adk/
 │       ├── conversations/
 │       ├── tools/
 │       ├── actions/
-│       └── ...
-├── plugin/                 ← WordPress Plugin
-│   ├── botpress-wp.php     ← Plugin-Hauptdatei
-│   ├── includes/
-│   ├── admin/
-│   ├── public/
-│   └── assets/
-└── .claude/
-    └── skills/
+│       └── knowledge/
+└── plugin/                 ← WordPress Plugin
+    ├── botpress-webchat.php
+    ├── includes/
+    │   ├── cpt/            ← Custom Post Types
+    │   └── rest/           ← REST API Endpoints
+    └── src/admin/          ← React Admin UI
 ```
+
+## Wiederverwendbarkeit
+
+Das Plugin ist **firmenübergreifend einsetzbar**:
+- Alle Texte und Datenquellen über Admin konfigurierbar
+- CPTs optional aktivierbar (nicht jede Firma braucht alles)
+- Styling komplett anpassbar
+- Sprache konfigurierbar (Standard: Deutsch)
+- Keine firmenspezifischen Hardcodes
 
 ## Lizenz
 

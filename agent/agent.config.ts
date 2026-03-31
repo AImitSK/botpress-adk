@@ -1,8 +1,8 @@
-import { z, defineConfig } from '@botpress/runtime';
+import { z, defineConfig } from "@botpress/runtime";
 
 export default defineConfig({
-  name: 'agent',
-  description: 'An AI agent built with Botpress ADK',
+  name: "botpress-adk",
+  description: "An AI agent built with Botpress ADK",
 
   defaultModels: {
     autonomous: "cerebras:gpt-oss-120b",
@@ -19,14 +19,14 @@ export default defineConfig({
 
   dependencies: {
     integrations: {
-        "chat": {
-            "version": "chat@latest",
-            "enabled": true
-        },
-        "webchat": {
-            "version": "webchat@latest",
-            "enabled": true
-        }
+      chat: {
+        version: "chat@latest",
+        enabled: true,
+      },
+      webchat: {
+        version: "webchat@latest",
+        enabled: true,
+      },
     },
   },
 });

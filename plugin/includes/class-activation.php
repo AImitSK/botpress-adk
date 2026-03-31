@@ -8,6 +8,7 @@ class Activation {
 		$settings = Settings::get_all();
 		update_option( 'bpwc_settings', $settings );
 
+		Knowledge_Db::install();
 		flush_rewrite_rules();
 
 		// Auto-connect to Botpress if developer-config has bot_id.

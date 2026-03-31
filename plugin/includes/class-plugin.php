@@ -20,8 +20,10 @@ class Plugin {
 	private function init_hooks(): void {
 		add_action( 'init', [ $this, 'load_textdomain' ] );
 		add_action( 'admin_menu', [ Admin_Page::class, 'register' ] );
+		add_action( 'admin_menu', [ Knowledge_Page::class, 'register' ] );
 		add_action( 'admin_menu', [ Conversation_Viewer::class, 'register' ] );
 		add_action( 'admin_enqueue_scripts', [ Admin_Page::class, 'enqueue_assets' ] );
+		add_action( 'admin_enqueue_scripts', [ Knowledge_Page::class, 'enqueue_assets' ] );
 		add_action( 'admin_enqueue_scripts', [ Conversation_Viewer::class, 'enqueue_assets' ] );
 		add_action( 'wp_footer', [ Frontend::class, 'render_webchat' ] );
 		add_action( 'rest_api_init', [ $this, 'register_rest_routes' ] );
@@ -47,5 +49,6 @@ class Plugin {
 		( new Rest\Rest_Site_Info() )->register_routes();
 		( new Rest\Rest_Forms() )->register_routes();
 		( new Rest\Rest_Conversations() )->register_routes();
+		( new Rest\Rest_Sources() )->register_routes();
 	}
 }

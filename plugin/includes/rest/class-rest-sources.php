@@ -30,7 +30,7 @@ class Rest_Sources {
 				'permission_callback' => [ $this, 'check_admin' ],
 			],
 			[
-				'methods'             => 'PUT',
+				'methods'             => \WP_REST_Server::EDITABLE,
 				'callback'            => [ $this, 'update_source' ],
 				'permission_callback' => [ $this, 'check_admin' ],
 			],

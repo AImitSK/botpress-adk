@@ -582,3 +582,18 @@
 .bpwc-kb__mapping-add {
 	font-size: 12px !important;
 }
+
+.bpwc-kb__add-field-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	margin-bottom: 16px;
+	padding: 12px 16px;
+	background: #EEF3FF;
+	border-radius: 8px;
+	border: 1px solid #C5D7F7;
+}
+
+.bpwc-kb__add-field-row .components-text-control__input {
+	flex: 1;
+}

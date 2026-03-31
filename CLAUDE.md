@@ -21,6 +21,7 @@ Detaillierter Plan: siehe `PLAN.md`.
 - Webchat-Widget Einbettung mit Customizer (Farben, Schriften, Position)
 - Custom Post Types: Kontakte, Produkte, Downloads, Ländervertretungen (optional an/aus)
 - REST-Endpoints unter `bpwc/v1/bot/*` mit Bearer-Token Auth
+- Conversation Viewer: Chat-Gespräche aus Botpress Cloud API im Admin einsehen, filtern, exportieren
 - WP-Actions/Filter für Extensibility
 - Kompatibel mit klassischen Themes und Full Site Editing (FSE)
 

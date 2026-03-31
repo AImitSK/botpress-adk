@@ -155,7 +155,7 @@ Regeln:
 ---
 
 ## Phase 4: Integration + Polish
-**Ziel:** Kontext-Passing, Hooks, Nachrichten-Log, Shortcode, Production-Ready
+**Ziel:** Kontext-Passing, Hooks, Shortcode, Production-Ready
 
 ### Dateien
 
@@ -163,7 +163,6 @@ Regeln:
 |-------|--------|-------------|
 | `plugin/includes/class-frontend.php` | Erweitern | Page-Context an Webchat übergeben |
 | `plugin/includes/class-hooks.php` | Neu | Alle Actions/Filters dokumentiert |
-| `plugin/includes/class-message-log.php` | Neu | Nachrichten-Log DB-Tabelle + Admin-Seite |
 | `plugin/includes/class-shortcode.php` | Neu | `[botpress_webchat]` Shortcode |
 | `plugin/includes/class-activation.php` | Neu | Activation/Deactivation-Logic |
 | `plugin/includes/rest/class-rest-forms.php` | Neu | Formular-Erkennung (CF7, Gravity, WPForms) |
@@ -181,15 +180,83 @@ Regeln:
 ### Test
 - Produktseite besuchen → Bot weiß welche Seite
 - Filter in functions.php → Custom-Context erreicht Bot
-- Nachricht senden → E-Mail + Admin-Log
+- Nachricht senden → E-Mail kommt an
 - `[botpress_webchat]` auf Seite → Widget nur dort
 - `adk deploy` → Deployed Bot funktioniert
 
 ---
 
+## Phase 5: Conversation Viewer
+**Ziel:** Admin-Dashboard zum Einsehen aller Chat-Gespräche — was fragen Besucher, welche Themen sind gefragt, wie performt der Bot
+
+### Architektur
+- **Datenquelle:** Botpress Cloud API (Conversations + Messages Endpoints)
+- **Kein lokales Logging nötig:** Botpress speichert alle Gespräche, Plugin liest sie on-demand
+- **Botpress API Client** im Plugin: authentifiziert mit Bot-ID + Personal Access Token (PAT)
+- **Caching:** Transient-basierter Cache (5 Min) um API-Rate-Limits zu schonen
+
+### Dateien
+
+| Datei | Aktion | Beschreibung |
+|-------|--------|-------------|
+| `plugin/includes/class-botpress-api.php` | Neu | HTTP-Client für Botpress Cloud API (Conversations, Messages) |
+| `plugin/includes/class-conversation-viewer.php` | Neu | Admin-Seite: Conversations-Liste + Einzelansicht |
+| `plugin/includes/rest/class-rest-conversations.php` | Neu | Interner REST-Proxy für React-UI → Botpress API |
+| `plugin/src/admin/pages/ConversationsPage.js` | Neu | React: Conversations-Tabelle mit Pagination |
+| `plugin/src/admin/pages/ConversationDetail.js` | Neu | React: Chat-Verlauf als Bubble-UI |
+| `plugin/src/admin/components/MessageBubble.js` | Neu | React: Einzelne Nachricht (Bot/User, Timestamp) |
+| `plugin/src/admin/components/ConversationFilters.js` | Neu | React: Datums-Range, Suchbegriff, Status-Filter |
+| `plugin/src/admin/components/ExportButton.js` | Neu | React: CSV-Export der gefilterten Gespräche |
+
+### Settings (Erweiterung Connection-Tab)
+```php
+'connection' => [
+    // ... bestehende Felder
+    'botpress_pat'     => '',   // Personal Access Token für Botpress API
+    'botpress_bot_url' => '',   // Botpress Cloud API Base URL
+],
+```
+
+### Admin-Seite: Conversations-Liste
+- Tabelle: Datum/Uhrzeit, Besucher-ID (anonym), Erste Nachricht (Vorschau), Nachrichten-Anzahl, Dauer
+- Sortierung: neueste zuerst
+- Pagination: 25 pro Seite
+- Filter: Datumsbereich (letzte 7/30/90 Tage, custom), Volltextsuche in Nachrichten
+- Klick auf Zeile → Einzelansicht
+
+### Admin-Seite: Conversation Detail
+- Chat-Bubble-UI: User-Nachrichten links, Bot-Antworten rechts
+- Timestamps pro Nachricht
+- Metadaten: Startzeit, Dauer, Seite (wenn Page-Context aus Phase 4), User-Agent
+- Navigation: Zurück zur Liste, Vor/Zurück zwischen Gesprächen
+
+### CSV-Export
+- Export der aktuell gefilterten Liste
+- Felder: Datum, Besucher-ID, Nachrichten (User + Bot), Dauer, Seite
+- Dateiname: `conversations_YYYY-MM-DD.csv`
+
+### REST-Endpoints (intern, Admin-only)
+
+| Endpoint | Methode | Beschreibung |
+|----------|---------|-------------|
+| `bpwc/v1/conversations` | GET | Liste mit Pagination + Filtern |
+| `bpwc/v1/conversations/{id}` | GET | Einzelnes Gespräch mit allen Nachrichten |
+| `bpwc/v1/conversations/export` | GET | CSV-Download |
+
+### Test
+- Admin → Botpress Webchat → Conversations
+- Gespräche aus Botpress Cloud werden angezeigt
+- Klick auf Gespräch → vollständiger Chat-Verlauf
+- Datumsfilter → Liste aktualisiert sich
+- Suche nach "Produkt" → nur relevante Gespräche
+- CSV-Export → Datei mit korrekten Daten
+- Ohne PAT → Hinweis "Bitte API-Token konfigurieren"
+
+---
+
 ## Dateiübersicht
 
-### Plugin (~30 Dateien)
+### Plugin (~38 Dateien)
 ```
 plugin/
 ├── botpress-webchat.php
@@ -205,7 +272,8 @@ plugin/
 │   ├── class-hooks.php
 │   ├── class-shortcode.php
 │   ├── class-activation.php
-│   ├── class-message-log.php
+│   ├── class-botpress-api.php
+│   ├── class-conversation-viewer.php
 │   ├── cpt/
 │   │   ├── class-cpt-manager.php
 │   │   ├── class-cpt-base.php
@@ -222,13 +290,21 @@ plugin/
 │       ├── class-rest-country-reps.php
 │       ├── class-rest-pages.php
 │       ├── class-rest-site-info.php
-│       └── class-rest-forms.php
+│       ├── class-rest-forms.php
+│       └── class-rest-conversations.php
 └── src/admin/
     ├── index.js
-    └── tabs/
-        ├── ConnectionTab.js
-        ├── StylingTab.js
-        └── DataSourcesTab.js
+    ├── tabs/
+    │   ├── ConnectionTab.js
+    │   ├── StylingTab.js
+    │   └── DataSourcesTab.js
+    ├── pages/
+    │   ├── ConversationsPage.js
+    │   └── ConversationDetail.js
+    └── components/
+        ├── MessageBubble.js
+        ├── ConversationFilters.js
+        └── ExportButton.js
 ```
 
 ### Agent (~15 Dateien)

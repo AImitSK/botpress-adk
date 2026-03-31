@@ -10,6 +10,7 @@ import InternalPagesConfig from './configs/InternalPagesConfig';
 import ExternalPagesConfig from './configs/ExternalPagesConfig';
 import SitemapConfig from './configs/SitemapConfig';
 import RssConfig from './configs/RssConfig';
+import FileSourceConfig from './configs/FileSourceConfig';
 
 const SOURCE_TYPES = [
 	{ value: 'text', label: 'Text / FAQ' },
@@ -19,10 +20,10 @@ const SOURCE_TYPES = [
 	{ value: 'external_pages', label: 'External Pages' },
 	{ value: 'sitemap', label: 'Sitemap' },
 	{ value: 'rss', label: 'RSS Feed' },
-	{ value: 'file', label: 'File Upload (coming soon)' },
+	{ value: 'file', label: 'File Upload' },
 ];
 
-const ENABLED_TYPES = [ 'text', 'table', 'wp_data', 'internal_pages', 'external_pages', 'sitemap', 'rss' ];
+const ENABLED_TYPES = [ 'text', 'table', 'wp_data', 'internal_pages', 'external_pages', 'sitemap', 'rss', 'file' ];
 
 export default function SourceEditor( { sourceId, onSave, onDelete, onBack } ) {
 	const isNew = sourceId === 0;
@@ -116,6 +117,13 @@ export default function SourceEditor( { sourceId, onSave, onDelete, onBack } ) {
 						config={ source.config }
 						onChange={ ( c ) => update( 'config', c ) }
 						sourceId={ source.id }
+					/>
+				);
+			case 'file':
+				return (
+					<FileSourceConfig
+						config={ source.config }
+						onChange={ ( c ) => update( 'config', c ) }
 					/>
 				);
 			default:

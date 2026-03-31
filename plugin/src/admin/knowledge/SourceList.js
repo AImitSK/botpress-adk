@@ -23,6 +23,8 @@ function getSourceMeta( source ) {
 		const rows = ( source.config?.rows || [] ).length;
 		const cols = ( source.config?.columns || [] ).length;
 		detail = `${ rows } rows, ${ cols } columns`;
+	} else if ( source.type === 'file' ) {
+		detail = source.config?.file_name || 'No file';
 	} else if ( source.type === 'wp_data' ) {
 		const pt = source.config?.post_type || '';
 		const fields = Object.keys( source.config?.field_map || {} ).length;

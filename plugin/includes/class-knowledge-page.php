@@ -30,6 +30,8 @@ class Knowledge_Page {
 			remove_all_actions( 'all_admin_notices' );
 		}, 999 );
 
+		wp_enqueue_media();
+
 		$asset_file = BPWC_PLUGIN_DIR . 'build/knowledge.asset.php';
 
 		if ( ! file_exists( $asset_file ) ) {

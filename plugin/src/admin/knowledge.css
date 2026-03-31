@@ -583,6 +583,89 @@
 	font-size: 12px !important;
 }
 
+/* File Upload */
+.bpwc-kb__file-dropzone {
+	padding: 40px;
+	text-align: center;
+	border: 2px dashed #d0d0d0;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: all 0.15s;
+	background: #fafafa;
+}
+
+.bpwc-kb__file-dropzone:hover {
+	border-color: #3276EA;
+	background: #f0f5ff;
+}
+
+.bpwc-kb__file-dropzone-icon {
+	font-size: 36px;
+	margin-bottom: 8px;
+}
+
+.bpwc-kb__file-dropzone p {
+	margin: 0 0 4px;
+	font-size: 14px;
+	color: #555;
+}
+
+.bpwc-kb__file-dropzone-formats {
+	font-size: 12px;
+	color: #999;
+}
+
+.bpwc-kb__file-preview {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 16px 20px;
+	background: #f8f9fa;
+	border: 1px solid #e4e4e4;
+	border-radius: 10px;
+}
+
+.bpwc-kb__file-icon {
+	font-size: 32px;
+	flex-shrink: 0;
+}
+
+.bpwc-kb__file-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.bpwc-kb__file-name {
+	font-weight: 600;
+	font-size: 14px;
+	color: #1a1a1a;
+	word-break: break-all;
+}
+
+.bpwc-kb__file-meta {
+	display: flex;
+	gap: 12px;
+	font-size: 12px;
+	color: #888;
+	margin-top: 2px;
+}
+
+.bpwc-kb__file-actions {
+	display: flex;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+.bpwc-kb__file-notice {
+	margin-top: 12px;
+	padding: 10px 14px;
+	background: #FFF8E1;
+	border: 1px solid #FFE082;
+	border-radius: 6px;
+	font-size: 12px;
+	color: #F57F17;
+}
+
 /* Config descriptions */
 .bpwc-kb__config-desc {
 	font-size: 13px;

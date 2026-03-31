@@ -144,6 +144,8 @@ class Knowledge_Source {
 				return $this->query_wp_data( $search );
 			case 'internal_pages':
 				return $this->query_internal_pages( $search );
+			case 'file':
+				return $this->query_file( $search );
 			case 'external_pages':
 			case 'sitemap':
 			case 'rss':
@@ -195,6 +197,33 @@ class Knowledge_Source {
 			'data'    => $rows,
 			'columns' => $columns,
 			'total'   => count( $rows ),
+		];
+	}
+
+	private function query_file( string $search ): array {
+		$attachment_id = $this->config['attachment_id'] ?? 0;
+		if ( empty( $attachment_id ) ) {
+			return [ 'data' => [], 'total' => 0 ];
+		}
+
+		// Use cached content if available.
+		$content = $this->cached_content;
+		if ( empty( $content ) ) {
+			$content = File_Extractor::extract( $attachment_id );
+			if ( ! empty( $content ) ) {
+				$this->cached_content = $content;
+				$this->last_synced    = current_time( 'mysql' );
+				$this->save();
+			}
+		}
+
+		if ( ! empty( $search ) && false === stripos( $content, $search ) ) {
+			return [ 'data' => [], 'total' => 0 ];
+		}
+
+		return [
+			'data'  => [ [ 'content' => $content ] ],
+			'total' => 1,
 		];
 	}
 

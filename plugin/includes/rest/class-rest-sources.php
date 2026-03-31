@@ -55,6 +55,13 @@ class Rest_Sources {
 			'permission_callback' => [ $this, 'check_admin' ],
 		] );
 
+		// Sync endpoint.
+		register_rest_route( self::NAMESPACE, '/sources/(?P<id>\d+)/sync', [
+			'methods'             => \WP_REST_Server::CREATABLE,
+			'callback'            => [ $this, 'sync_source' ],
+			'permission_callback' => [ $this, 'check_admin' ],
+		] );
+
 		// Bot endpoints.
 		register_rest_route( self::NAMESPACE, '/bot/sources', [
 			'methods'             => \WP_REST_Server::READABLE,
@@ -217,6 +224,25 @@ class Rest_Sources {
 			'data'    => array_slice( $result['data'], 0, 5 ),
 			'columns' => $result['columns'] ?? null,
 			'total'   => $result['total'],
+		] );
+	}
+
+	public function sync_source( \WP_REST_Request $request ): \WP_REST_Response {
+		$source = Knowledge_Source::find( (int) $request->get_param( 'id' ) );
+
+		if ( ! $source ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => __( 'Source not found.', 'botpress-webchat' ),
+			], 404 );
+		}
+
+		$result = $source->sync();
+
+		return new \WP_REST_Response( [
+			'success'     => $result,
+			'message'     => $result ? __( 'Sync completed.', 'botpress-webchat' ) : __( 'Sync failed.', 'botpress-webchat' ),
+			'last_synced' => $source->last_synced,
 		] );
 	}
 

@@ -31,6 +31,7 @@ class Plugin {
 		Cpt\Cpt_Manager::init();
 		Hooks::init();
 		Shortcode::init();
+		Knowledge_Sync::init();
 
 		do_action( 'bpwc_plugin_loaded' );
 	}

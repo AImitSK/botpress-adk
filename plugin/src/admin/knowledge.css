@@ -583,6 +583,152 @@
 	font-size: 12px !important;
 }
 
+/* Config descriptions */
+.bpwc-kb__config-desc {
+	font-size: 13px;
+	color: #888;
+	margin: 0 0 16px;
+	line-height: 1.5;
+}
+
+/* Internal Pages */
+.bpwc-kb__pages-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
+.bpwc-kb__pages-search {
+	flex: 1;
+}
+
+.bpwc-kb__pages-count {
+	font-size: 12px;
+	color: #888;
+	white-space: nowrap;
+}
+
+.bpwc-kb__pages-link {
+	background: none;
+	border: none;
+	color: #3276EA;
+	cursor: pointer;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 0;
+}
+
+.bpwc-kb__pages-link:hover {
+	text-decoration: underline;
+}
+
+.bpwc-kb__pages-list {
+	max-height: 400px;
+	overflow-y: auto;
+	border: 1px solid #e4e4e4;
+	border-radius: 8px;
+}
+
+.bpwc-kb__pages-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 14px;
+	border-bottom: 1px solid #f0f0f0;
+	cursor: pointer;
+	transition: background 0.1s;
+}
+
+.bpwc-kb__pages-item:last-child {
+	border-bottom: none;
+}
+
+.bpwc-kb__pages-item:hover {
+	background: #f8f9fa;
+}
+
+.bpwc-kb__pages-title {
+	font-size: 13px;
+}
+
+.bpwc-kb__pages-empty {
+	padding: 24px;
+	text-align: center;
+	color: #999;
+}
+
+/* URL List (External Pages) */
+.bpwc-kb__url-input-row {
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+	margin-bottom: 16px;
+}
+
+.bpwc-kb__url-input-row .components-text-control__input {
+	flex: 1;
+}
+
+.bpwc-kb__url-list {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-bottom: 16px;
+}
+
+.bpwc-kb__url-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 14px;
+	background: #f8f9fa;
+	border: 1px solid #e4e4e4;
+	border-radius: 6px;
+}
+
+.bpwc-kb__url-text {
+	font-size: 13px;
+	color: #3276EA;
+	word-break: break-all;
+}
+
+.bpwc-kb__url-remove {
+	background: none;
+	border: none;
+	color: #ccc;
+	cursor: pointer;
+	font-size: 18px;
+	flex-shrink: 0;
+}
+
+.bpwc-kb__url-remove:hover {
+	color: #e74c3c;
+}
+
+/* Sync Section */
+.bpwc-kb__sync-section {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid #eee;
+}
+
+.bpwc-kb__sync-result {
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.bpwc-kb__sync-result.is-success {
+	color: #2E7D32;
+}
+
+.bpwc-kb__sync-result.is-error {
+	color: #C62828;
+}
+
 .bpwc-kb__add-field-row {
 	display: flex;
 	align-items: flex-start;

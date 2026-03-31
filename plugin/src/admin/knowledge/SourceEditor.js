@@ -6,19 +6,23 @@ import apiFetch from '@wordpress/api-fetch';
 import TextSourceConfig from './configs/TextSourceConfig';
 import TableSourceConfig from './configs/TableSourceConfig';
 import WpDataSourceConfig from './configs/WpDataSourceConfig';
+import InternalPagesConfig from './configs/InternalPagesConfig';
+import ExternalPagesConfig from './configs/ExternalPagesConfig';
+import SitemapConfig from './configs/SitemapConfig';
+import RssConfig from './configs/RssConfig';
 
 const SOURCE_TYPES = [
 	{ value: 'text', label: 'Text / FAQ' },
 	{ value: 'table', label: 'Table' },
 	{ value: 'wp_data', label: 'WordPress Data' },
-	{ value: 'internal_pages', label: 'Internal Pages (coming soon)' },
-	{ value: 'external_pages', label: 'External Pages (coming soon)' },
+	{ value: 'internal_pages', label: 'Internal Pages' },
+	{ value: 'external_pages', label: 'External Pages' },
+	{ value: 'sitemap', label: 'Sitemap' },
+	{ value: 'rss', label: 'RSS Feed' },
 	{ value: 'file', label: 'File Upload (coming soon)' },
-	{ value: 'sitemap', label: 'Sitemap (coming soon)' },
-	{ value: 'rss', label: 'RSS Feed (coming soon)' },
 ];
 
-const ENABLED_TYPES = [ 'text', 'table', 'wp_data' ];
+const ENABLED_TYPES = [ 'text', 'table', 'wp_data', 'internal_pages', 'external_pages', 'sitemap', 'rss' ];
 
 export default function SourceEditor( { sourceId, onSave, onDelete, onBack } ) {
 	const isNew = sourceId === 0;
@@ -81,6 +85,37 @@ export default function SourceEditor( { sourceId, onSave, onDelete, onBack } ) {
 					<WpDataSourceConfig
 						config={ source.config }
 						onChange={ ( c ) => update( 'config', c ) }
+					/>
+				);
+			case 'internal_pages':
+				return (
+					<InternalPagesConfig
+						config={ source.config }
+						onChange={ ( c ) => update( 'config', c ) }
+					/>
+				);
+			case 'external_pages':
+				return (
+					<ExternalPagesConfig
+						config={ source.config }
+						onChange={ ( c ) => update( 'config', c ) }
+						sourceId={ source.id }
+					/>
+				);
+			case 'sitemap':
+				return (
+					<SitemapConfig
+						config={ source.config }
+						onChange={ ( c ) => update( 'config', c ) }
+						sourceId={ source.id }
+					/>
+				);
+			case 'rss':
+				return (
+					<RssConfig
+						config={ source.config }
+						onChange={ ( c ) => update( 'config', c ) }
+						sourceId={ source.id }
 					/>
 				);
 			default:

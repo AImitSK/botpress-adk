@@ -18,6 +18,7 @@ class Activation {
 	}
 
 	public static function deactivate(): void {
+		Knowledge_Sync::deactivate();
 		flush_rewrite_rules();
 	}
 }

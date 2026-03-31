@@ -142,6 +142,12 @@ class Knowledge_Source {
 				return $this->query_table( $search );
 			case 'wp_data':
 				return $this->query_wp_data( $search );
+			case 'internal_pages':
+				return $this->query_internal_pages( $search );
+			case 'external_pages':
+			case 'sitemap':
+			case 'rss':
+				return $this->query_cached( $search );
 			default:
 				return [ 'data' => [], 'total' => 0 ];
 		}
@@ -190,5 +196,213 @@ class Knowledge_Source {
 			'columns' => $columns,
 			'total'   => count( $rows ),
 		];
+	}
+
+	private function query_internal_pages( string $search ): array {
+		$post_ids = $this->config['post_ids'] ?? [];
+
+		if ( empty( $post_ids ) ) {
+			return [ 'data' => [], 'total' => 0 ];
+		}
+
+		$args = [
+			'post__in'       => $post_ids,
+			'post_type'      => 'any',
+			'posts_per_page' => 100,
+			'post_status'    => 'publish',
+		];
+
+		if ( ! empty( $search ) ) {
+			$args['s'] = $search;
+		}
+
+		$query = new \WP_Query( $args );
+		$pages = [];
+
+		foreach ( $query->posts as $post ) {
+			$pages[] = [
+				'title'   => $post->post_title,
+				'url'     => get_permalink( $post ),
+				'content' => wp_strip_all_tags( $post->post_content ),
+			];
+		}
+
+		return [
+			'data'  => $pages,
+			'total' => count( $pages ),
+		];
+	}
+
+	/**
+	 * Query from cached content (external pages, sitemap, RSS).
+	 */
+	private function query_cached( string $search ): array {
+		$content = $this->cached_content;
+		if ( empty( $content ) ) {
+			return [ 'data' => [], 'total' => 0 ];
+		}
+
+		$entries = json_decode( $content, true );
+		if ( ! is_array( $entries ) ) {
+			// Plain text cache.
+			if ( ! empty( $search ) && false === stripos( $content, $search ) ) {
+				return [ 'data' => [], 'total' => 0 ];
+			}
+			return [
+				'data'  => [ [ 'content' => $content ] ],
+				'total' => 1,
+			];
+		}
+
+		if ( ! empty( $search ) ) {
+			$entries = array_filter( $entries, function ( $entry ) use ( $search ) {
+				return false !== stripos( wp_json_encode( $entry ), $search );
+			} );
+			$entries = array_values( $entries );
+		}
+
+		return [
+			'data'  => $entries,
+			'total' => count( $entries ),
+		];
+	}
+
+	/**
+	 * Sync external content and cache it.
+	 */
+	public function sync(): bool {
+		switch ( $this->type ) {
+			case 'external_pages':
+				return $this->sync_external_pages();
+			case 'sitemap':
+				return $this->sync_sitemap();
+			case 'rss':
+				return $this->sync_rss();
+			default:
+				return false;
+		}
+	}
+
+	private function sync_external_pages(): bool {
+		$urls    = $this->config['urls'] ?? [];
+		$entries = [];
+
+		foreach ( $urls as $url ) {
+			$response = wp_remote_get( $url, [ 'timeout' => 15 ] );
+			if ( is_wp_error( $response ) ) {
+				continue;
+			}
+
+			$html = wp_remote_retrieve_body( $response );
+			$text = self::html_to_text( $html );
+
+			$entries[] = [
+				'url'     => $url,
+				'content' => $text,
+			];
+		}
+
+		$this->cached_content = wp_json_encode( $entries );
+		$this->last_synced    = current_time( 'mysql' );
+		return $this->save();
+	}
+
+	private function sync_sitemap(): bool {
+		$sitemap_url = $this->config['sitemap_url'] ?? '';
+		if ( empty( $sitemap_url ) ) {
+			return false;
+		}
+
+		$response = wp_remote_get( $sitemap_url, [ 'timeout' => 15 ] );
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+
+		$body = wp_remote_retrieve_body( $response );
+		$urls  = [];
+
+		// Parse XML sitemap.
+		$xml = @simplexml_load_string( $body );
+		if ( $xml ) {
+			foreach ( $xml->url as $url_node ) {
+				$urls[] = (string) $url_node->loc;
+			}
+			// Sitemap index.
+			foreach ( $xml->sitemap as $sitemap_node ) {
+				$child_url  = (string) $sitemap_node->loc;
+				$child_resp = wp_remote_get( $child_url, [ 'timeout' => 15 ] );
+				if ( ! is_wp_error( $child_resp ) ) {
+					$child_xml = @simplexml_load_string( wp_remote_retrieve_body( $child_resp ) );
+					if ( $child_xml ) {
+						foreach ( $child_xml->url as $url_node ) {
+							$urls[] = (string) $url_node->loc;
+						}
+					}
+				}
+			}
+		}
+
+		// Fetch each URL (limit to 50).
+		$entries = [];
+		foreach ( array_slice( $urls, 0, 50 ) as $url ) {
+			$page_resp = wp_remote_get( $url, [ 'timeout' => 10 ] );
+			if ( is_wp_error( $page_resp ) ) {
+				continue;
+			}
+
+			$html  = wp_remote_retrieve_body( $page_resp );
+			$title = '';
+			if ( preg_match( '/<title>(.*?)<\/title>/is', $html, $m ) ) {
+				$title = html_entity_decode( trim( $m[1] ) );
+			}
+
+			$entries[] = [
+				'url'     => $url,
+				'title'   => $title,
+				'content' => self::html_to_text( $html ),
+			];
+		}
+
+		$this->cached_content = wp_json_encode( $entries );
+		$this->last_synced    = current_time( 'mysql' );
+		return $this->save();
+	}
+
+	private function sync_rss(): bool {
+		$feed_url = $this->config['feed_url'] ?? '';
+		if ( empty( $feed_url ) ) {
+			return false;
+		}
+
+		$feed = fetch_feed( $feed_url );
+		if ( is_wp_error( $feed ) ) {
+			return false;
+		}
+
+		$entries = [];
+		foreach ( $feed->get_items( 0, 50 ) as $item ) {
+			$entries[] = [
+				'title'       => $item->get_title(),
+				'url'         => $item->get_link(),
+				'date'        => $item->get_date( 'Y-m-d H:i:s' ),
+				'description' => wp_strip_all_tags( $item->get_description() ),
+			];
+		}
+
+		$this->cached_content = wp_json_encode( $entries );
+		$this->last_synced    = current_time( 'mysql' );
+		return $this->save();
+	}
+
+	private static function html_to_text( string $html ): string {
+		// Remove scripts and styles.
+		$html = preg_replace( '/<script[^>]*>.*?<\/script>/is', '', $html );
+		$html = preg_replace( '/<style[^>]*>.*?<\/style>/is', '', $html );
+		// Remove nav, header, footer.
+		$html = preg_replace( '/<(nav|header|footer)[^>]*>.*?<\/\1>/is', '', $html );
+		// Strip tags and clean up.
+		$text = wp_strip_all_tags( $html );
+		$text = preg_replace( '/\s+/', ' ', $text );
+		return trim( $text );
 	}
 }

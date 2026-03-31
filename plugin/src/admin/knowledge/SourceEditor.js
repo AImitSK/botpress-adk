@@ -5,11 +5,12 @@ import apiFetch from '@wordpress/api-fetch';
 
 import TextSourceConfig from './configs/TextSourceConfig';
 import TableSourceConfig from './configs/TableSourceConfig';
+import WpDataSourceConfig from './configs/WpDataSourceConfig';
 
 const SOURCE_TYPES = [
 	{ value: 'text', label: '📝  Text / FAQ' },
 	{ value: 'table', label: '📊  Table' },
-	{ value: 'wp_data', label: '🗄️  WordPress Data (coming soon)', disabled: true },
+	{ value: 'wp_data', label: '🗄️  WordPress Data' },
 	{ value: 'internal_pages', label: '📄  Internal Pages (coming soon)', disabled: true },
 	{ value: 'external_pages', label: '🌐  External Pages (coming soon)', disabled: true },
 	{ value: 'file', label: '📎  File Upload (coming soon)', disabled: true },
@@ -69,6 +70,13 @@ export default function SourceEditor( { sourceId, onSave, onDelete, onBack } ) {
 			case 'table':
 				return (
 					<TableSourceConfig
+						config={ source.config }
+						onChange={ ( c ) => update( 'config', c ) }
+					/>
+				);
+			case 'wp_data':
+				return (
+					<WpDataSourceConfig
 						config={ source.config }
 						onChange={ ( c ) => update( 'config', c ) }
 					/>

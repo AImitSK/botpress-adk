@@ -3,6 +3,7 @@
 namespace Bpwc\Rest;
 
 use Bpwc\Knowledge_Source;
+use Bpwc\Field_Scanner;
 
 class Rest_Sources {
 
@@ -38,6 +39,20 @@ class Rest_Sources {
 				'callback'            => [ $this, 'delete_source' ],
 				'permission_callback' => [ $this, 'check_admin' ],
 			],
+		] );
+
+		// Post type scanner for WP-data mapping.
+		register_rest_route( self::NAMESPACE, '/post-types', [
+			'methods'             => \WP_REST_Server::READABLE,
+			'callback'            => [ $this, 'get_post_types' ],
+			'permission_callback' => [ $this, 'check_admin' ],
+		] );
+
+		// Preview mapped data.
+		register_rest_route( self::NAMESPACE, '/sources/(?P<id>\d+)/preview', [
+			'methods'             => \WP_REST_Server::READABLE,
+			'callback'            => [ $this, 'preview_source' ],
+			'permission_callback' => [ $this, 'check_admin' ],
 		] );
 
 		// Bot endpoints.
@@ -176,6 +191,33 @@ class Rest_Sources {
 		$source->delete();
 
 		return new \WP_REST_Response( [ 'success' => true ] );
+	}
+
+	public function get_post_types(): \WP_REST_Response {
+		return new \WP_REST_Response( [
+			'success' => true,
+			'data'    => Field_Scanner::get_post_types(),
+		] );
+	}
+
+	public function preview_source( \WP_REST_Request $request ): \WP_REST_Response {
+		$source = Knowledge_Source::find( (int) $request->get_param( 'id' ) );
+
+		if ( ! $source ) {
+			return new \WP_REST_Response( [
+				'success' => false,
+				'message' => __( 'Source not found.', 'botpress-webchat' ),
+			], 404 );
+		}
+
+		$result = $source->query( '' );
+
+		return new \WP_REST_Response( [
+			'success' => true,
+			'data'    => array_slice( $result['data'], 0, 5 ),
+			'columns' => $result['columns'] ?? null,
+			'total'   => $result['total'],
+		] );
 	}
 
 	// Bot endpoints.

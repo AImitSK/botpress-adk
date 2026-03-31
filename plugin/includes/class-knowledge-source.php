@@ -2,6 +2,8 @@
 
 namespace Bpwc;
 
+use Bpwc\Field_Scanner;
+
 class Knowledge_Source {
 
 	public int $id = 0;
@@ -138,6 +140,8 @@ class Knowledge_Source {
 				return $this->query_text( $search );
 			case 'table':
 				return $this->query_table( $search );
+			case 'wp_data':
+				return $this->query_wp_data( $search );
 			default:
 				return [ 'data' => [], 'total' => 0 ];
 		}
@@ -152,6 +156,17 @@ class Knowledge_Source {
 			'data'  => [ [ 'content' => $content ] ],
 			'total' => 1,
 		];
+	}
+
+	private function query_wp_data( string $search ): array {
+		$post_type = $this->config['post_type'] ?? '';
+		$field_map = $this->config['field_map'] ?? [];
+
+		if ( empty( $post_type ) || empty( $field_map ) ) {
+			return [ 'data' => [], 'total' => 0 ];
+		}
+
+		return Field_Scanner::query_mapped_data( $post_type, $field_map, $search );
 	}
 
 	private function query_table( string $search ): array {

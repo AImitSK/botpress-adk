@@ -42,10 +42,13 @@ function App() {
 				setSettings( res.data );
 				setNotice( __( 'Settings saved.', 'botpress-webchat' ) );
 			}
+			setSaving( false );
+			return res;
 		} catch ( err ) {
 			setNotice( __( 'Error saving settings.', 'botpress-webchat' ) );
+			setSaving( false );
+			return null;
 		}
-		setSaving( false );
 	};
 
 	if ( ! settings ) {

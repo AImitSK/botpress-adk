@@ -30,7 +30,7 @@ class Frontend {
 		$custom_css  = esc_html( $settings['styling']['custom_css'] );
 
 		?>
-		<script src="https://cdn.botpress.cloud/webchat/v2.3/inject.js"></script>
+		<script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
 		<script>
 			window.botpress.init(<?php echo $config_json; ?>);
 		</script>
@@ -52,7 +52,7 @@ class Frontend {
 		$config      = apply_filters( 'bpwc_webchat_config', $config, $settings );
 		$config_json = wp_json_encode( $config );
 
-		return '<script src="https://cdn.botpress.cloud/webchat/v2.3/inject.js"></script>'
+		return '<script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>'
 			. '<script>window.botpress.init(' . $config_json . ');</script>';
 	}
 

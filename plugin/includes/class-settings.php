@@ -7,38 +7,52 @@ class Settings {
 	private const OPTION_KEY = 'bpwc_settings';
 	private const TOKEN_HASH_KEY = 'bpwc_api_token_hash';
 
-	private static array $defaults = [
-		'connection' => [
-			'bot_id'     => '',
-			'webchat_id' => '',
-			'api_token'      => '',
-			'wp_api_url'     => '',
-			'botpress_pat'   => '',
-		],
-		'styling' => [
-			'primary_color'    => '#0066FF',
-			'background_color' => '#FFFFFF',
-			'font_family'      => 'inherit',
-			'position'         => 'right',
-			'z_index'          => 9999,
-			'custom_css'       => '',
-			'bot_name'         => 'Support Bot',
-			'bot_avatar_url'   => '',
-			'greeting_message' => 'Hallo! Wie kann ich Ihnen helfen?',
-		],
-		'data_sources' => [
-			'enable_contacts'     => false,
-			'enable_products'     => false,
-			'enable_downloads'    => false,
-			'enable_country_reps' => false,
-		],
-		'general' => [
-			'language'   => 'de',
-			'enabled'    => true,
-			'show_on'    => 'all',
-			'page_rules' => [],
-		],
-	];
+	private static ?array $dev_config = null;
+
+	private static function dev_config(): array {
+		if ( null === self::$dev_config ) {
+			$path = BPWC_PLUGIN_DIR . 'developer-config.php';
+			self::$dev_config = file_exists( $path ) ? (array) require $path : [];
+		}
+		return self::$dev_config;
+	}
+
+	private static function defaults(): array {
+		$dev = self::dev_config();
+
+		return [
+			'connection' => [
+				'bot_id'       => '',
+				'webchat_id'   => '',
+				'api_token'    => '',
+				'wp_api_url'   => '',
+				'botpress_pat' => $dev['botpress_pat'] ?? '',
+			],
+			'styling' => [
+				'primary_color'    => '#0066FF',
+				'background_color' => '#FFFFFF',
+				'font_family'      => 'inherit',
+				'position'         => 'right',
+				'z_index'          => 9999,
+				'custom_css'       => '',
+				'bot_name'         => 'Support Bot',
+				'bot_avatar_url'   => '',
+				'greeting_message' => 'Hallo! Wie kann ich Ihnen helfen?',
+			],
+			'data_sources' => [
+				'enable_contacts'     => false,
+				'enable_products'     => false,
+				'enable_downloads'    => false,
+				'enable_country_reps' => false,
+			],
+			'general' => [
+				'language'   => $dev['default_language'] ?? 'de',
+				'enabled'    => true,
+				'show_on'    => 'all',
+				'page_rules' => [],
+			],
+		];
+	}
 
 	public static function get_all(): array {
 		$saved = get_option( self::OPTION_KEY, [] );
@@ -46,7 +60,7 @@ class Settings {
 	}
 
 	public static function get( string $dotpath, mixed $default = null ): mixed {
-		$keys    = explode( '.', $dotpath );
+		$keys     = explode( '.', $dotpath );
 		$settings = self::get_all();
 
 		foreach ( $keys as $key ) {
@@ -80,8 +94,9 @@ class Settings {
 	}
 
 	private static function merge_defaults( array $saved ): array {
-		$merged = [];
-		foreach ( self::$defaults as $group => $fields ) {
+		$defaults = self::defaults();
+		$merged   = [];
+		foreach ( $defaults as $group => $fields ) {
 			$merged[ $group ] = array_merge( $fields, $saved[ $group ] ?? [] );
 		}
 		return $merged;

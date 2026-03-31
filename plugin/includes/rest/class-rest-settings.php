@@ -3,6 +3,7 @@
 namespace Bpwc\Rest;
 
 use Bpwc\Settings;
+use Bpwc\Auto_Register;
 
 class Rest_Settings {
 
@@ -61,10 +62,22 @@ class Rest_Settings {
 
 		Settings::update( $body );
 
-		return new \WP_REST_Response( [
+		// Auto-register with Botpress Cloud if connection settings changed.
+		$registration = null;
+		if ( isset( $body['connection'] ) ) {
+			$registration = Auto_Register::sync();
+		}
+
+		$response = [
 			'success' => true,
 			'data'    => Settings::get_all(),
-		] );
+		];
+
+		if ( null !== $registration ) {
+			$response['registration'] = $registration;
+		}
+
+		return new \WP_REST_Response( $response );
 	}
 
 	public function generate_token( \WP_REST_Request $request ): \WP_REST_Response {

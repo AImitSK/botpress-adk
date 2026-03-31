@@ -24,15 +24,23 @@ class Frontend {
 			return;
 		}
 
-		$config     = self::build_config( $settings );
-		$config     = apply_filters( 'bpwc_webchat_config', $config, $settings );
+		$config      = self::build_config( $settings );
+		$config      = apply_filters( 'bpwc_webchat_config', $config, $settings );
 		$config_json = wp_json_encode( $config );
 		$custom_css  = esc_html( $settings['styling']['custom_css'] );
+
+		// Page context to send as user data.
+		$context      = self::get_page_context();
+		$context      = apply_filters( 'bpwc_webchat_context', $context, $settings );
+		$context_json = wp_json_encode( $context );
 
 		?>
 		<script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
 		<script>
 			window.botpress.init(<?php echo $config_json; ?>);
+			window.botpress.on("webchat:initialized", function() {
+				window.botpress.updateUser({ data: <?php echo $context_json; ?> });
+			});
 		</script>
 		<?php if ( ! empty( $custom_css ) ) : ?>
 			<style id="bpwc-custom-css"><?php echo $custom_css; ?></style>
@@ -87,40 +95,54 @@ class Frontend {
 			$config['botId'] = $settings['connection']['bot_id'];
 		}
 
-		$theme = [];
+		// Webchat v3 configuration object.
+		$configuration = [];
+
 		if ( ! empty( $styling['primary_color'] ) && '#0066FF' !== $styling['primary_color'] ) {
-			$theme['color'] = $styling['primary_color'];
-		}
-		if ( ! empty( $styling['background_color'] ) && '#FFFFFF' !== $styling['background_color'] ) {
-			$theme['backgroundColor'] = $styling['background_color'];
+			$configuration['color'] = $styling['primary_color'];
 		}
 		if ( ! empty( $styling['font_family'] ) && 'inherit' !== $styling['font_family'] ) {
-			$theme['fontFamily'] = $styling['font_family'];
+			$configuration['fontFamily'] = $styling['font_family'];
 		}
-		if ( ! empty( $theme ) ) {
-			$config['theme'] = $theme;
-		}
-
-		if ( ! empty( $styling['z_index'] ) && 9999 !== (int) $styling['z_index'] ) {
-			$config['zIndex'] = (int) $styling['z_index'];
-		}
-
 		if ( ! empty( $styling['bot_name'] ) ) {
-			$config['botName'] = $styling['bot_name'];
+			$configuration['botName'] = $styling['bot_name'];
 		}
 		if ( ! empty( $styling['bot_avatar_url'] ) ) {
-			$config['botAvatar'] = $styling['bot_avatar_url'];
+			$configuration['botAvatar'] = $styling['bot_avatar_url'];
 		}
 		if ( ! empty( $styling['greeting_message'] ) ) {
-			$config['composerPlaceholder'] = $styling['greeting_message'];
+			$configuration['composerPlaceholder'] = $styling['greeting_message'];
 		}
 
-		// Page context for the bot.
+		// Theme mode: light/dark based on background color.
+		if ( ! empty( $styling['background_color'] ) && '#FFFFFF' !== $styling['background_color'] ) {
+			// Dark backgrounds → dark mode.
+			$hex = ltrim( $styling['background_color'], '#' );
+			$r   = hexdec( substr( $hex, 0, 2 ) );
+			$g   = hexdec( substr( $hex, 2, 2 ) );
+			$b   = hexdec( substr( $hex, 4, 2 ) );
+			if ( ( $r + $g + $b ) / 3 < 128 ) {
+				$configuration['themeMode'] = 'dark';
+			}
+		}
+
+		// Position maps to variant in v3.
+		if ( ! empty( $styling['position'] ) && 'left' === $styling['position'] ) {
+			// v3 doesn't have left/right — handled via custom CSS.
+		}
+
+		if ( ! empty( $styling['custom_css'] ) ) {
+			// Custom CSS in v3 requires an external URL or inline style tag.
+			// We handle this via the <style> tag in render_webchat().
+		}
+
+		if ( ! empty( $configuration ) ) {
+			$config['configuration'] = $configuration;
+		}
+
+		// Page context as user data.
 		$context = self::get_page_context();
 		$context = apply_filters( 'bpwc_webchat_context', $context, $settings );
-		if ( ! empty( $context ) ) {
-			$config['userData'] = $context;
-		}
 
 		return $config;
 	}

@@ -152,8 +152,7 @@ export default function SourceEditor( { sourceId, onSave, onDelete, onBack } ) {
 												className={ `bpwc-kb__type-card ${ source.type === t.value ? 'is-selected' : '' } ${ ! enabled ? 'is-disabled' : '' }` }
 												onClick={ () => {
 													if ( enabled ) {
-														update( 'type', t.value );
-														update( 'config', {} );
+														setSource( ( prev ) => ( { ...prev, type: t.value, config: {} } ) );
 													}
 												} }
 											>

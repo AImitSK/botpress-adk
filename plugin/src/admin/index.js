@@ -7,8 +7,8 @@ import { __ } from '@wordpress/i18n';
 import IdentitySection from './sections/IdentitySection';
 import AppearanceSection from './sections/AppearanceSection';
 import FeaturesSection from './sections/FeaturesSection';
-import DataSourcesSection from './sections/DataSourcesSection';
 import ConnectionSection from './sections/ConnectionSection';
+import LanguageSection from './sections/LanguageSection';
 
 import './style.css';
 
@@ -16,7 +16,7 @@ const NAV_ITEMS = [
 	{ key: 'identity', label: 'Bot Identity', icon: 'businessman' },
 	{ key: 'appearance', label: 'Bot Appearance', icon: 'art' },
 	{ key: 'features', label: 'Features', icon: 'admin-settings' },
-	{ key: 'data-sources', label: 'Data Sources', icon: 'database' },
+	{ key: 'language', label: 'Language', icon: 'translation' },
 	{ key: 'connection', label: 'Connection', icon: 'admin-links' },
 ];
 
@@ -79,9 +79,9 @@ function App() {
 		if ( activeSection === 'identity' ) updates.identity = settings.identity;
 		if ( activeSection === 'appearance' ) updates.appearance = settings.appearance;
 		if ( activeSection === 'features' ) updates.features = settings.features;
-		if ( activeSection === 'data-sources' ) {
-			updates.data_sources = settings.data_sources;
+		if ( activeSection === 'language' ) {
 			updates.general = settings.general;
+			updates.language = settings.language;
 		}
 		save( updates );
 	};
@@ -94,10 +94,14 @@ function App() {
 				return <AppearanceSection appearance={ settings.appearance } onChange={ ( v ) => setSettings( { ...settings, appearance: v } ) } />;
 			case 'features':
 				return <FeaturesSection features={ settings.features } onChange={ ( v ) => setSettings( { ...settings, features: v } ) } />;
-			case 'data-sources':
-				return <DataSourcesSection dataSources={ settings.data_sources } general={ settings.general } onChange={ ( ds, gen ) => setSettings( { ...settings, data_sources: ds, general: gen } ) } />;
+			case 'language':
+				return <LanguageSection
+					general={ settings.general }
+					language={ settings.language || {} }
+					onChange={ ( group, v ) => setSettings( { ...settings, [ group ]: v } ) }
+				/>;
 			case 'connection':
-				return <ConnectionSection settings={ settings } onSave={ save } saving={ saving } />;
+				return <ConnectionSection settings={ settings } onSave={ save } saving={ saving } onChange={ setSettings } />;
 			default:
 				return null;
 		}

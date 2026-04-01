@@ -3,8 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "build": "wp-scripts build src/admin/index.js src/admin/conversations.js src/admin/knowledge.js --output-path=build",
-        "start": "wp-scripts start src/admin/index.js src/admin/conversations.js src/admin/knowledge.js --output-path=build"
+        "build": "wp-scripts build src/admin/index.js src/admin/conversations.js src/admin/knowledge.js src/admin/usage.js src/admin/inquiries.js --output-path=build",
+        "start": "wp-scripts start src/admin/index.js src/admin/conversations.js src/admin/knowledge.js src/admin/usage.js src/admin/inquiries.js --output-path=build"
     },
     "devDependencies": {
         "@wordpress/scripts": "^30.0.0"

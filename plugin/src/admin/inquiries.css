@@ -1,0 +1,155 @@
+@import './base.css';
+
+#bpwc-inquiries-root ~ .notice,
+#bpwc-inquiries-root ~ .updated,
+#bpwc-inquiries-root ~ .update-nag {
+	display: none !important;
+}
+
+/* ---- Tabs ---- */
+
+.bpwc-inquiries__tabs {
+	display: flex;
+	gap: 0;
+	margin-bottom: var(--space-2xl);
+	border-bottom: 2px solid var(--bpwc-border);
+}
+
+.bpwc-inquiries__tab {
+	background: none;
+	border: none;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -2px;
+	padding: var(--space-md) var(--space-xl);
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--bpwc-text-muted);
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.bpwc-inquiries__tab:hover {
+	color: var(--bpwc-text);
+}
+
+.bpwc-inquiries__tab.is-active {
+	color: var(--bpwc-primary);
+	border-bottom-color: var(--bpwc-primary);
+}
+
+.bpwc-inquiries__tab-count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--bpwc-primary);
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	min-width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	padding: 0 6px;
+	margin-left: var(--space-sm);
+}
+
+/* ---- Filters ---- */
+
+.bpwc-inquiries__filters {
+	display: flex;
+	gap: var(--space-md);
+	margin-bottom: var(--space-lg);
+	max-width: 200px;
+}
+
+/* ---- Table ---- */
+
+.bpwc-inquiries__table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+}
+
+.bpwc-inquiries__table thead th {
+	text-align: left;
+	padding: var(--space-md) var(--space-lg);
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--bpwc-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	border-bottom: 1px solid var(--bpwc-border);
+	background: var(--bpwc-bg);
+}
+
+.bpwc-inquiries__table tbody td {
+	padding: var(--space-md) var(--space-lg);
+	border-bottom: 1px solid var(--bpwc-border-light);
+	vertical-align: top;
+}
+
+.bpwc-inquiries__row--new {
+	background: var(--bpwc-primary-light);
+}
+
+.bpwc-inquiries__contact {
+	font-size: 12px;
+	color: var(--bpwc-text-muted);
+}
+
+.bpwc-inquiries__cell-message {
+	max-width: 400px;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.bpwc-inquiries__cell-date {
+	white-space: nowrap;
+	color: var(--bpwc-text-muted);
+	font-size: 12px;
+}
+
+.bpwc-inquiries__cell-status {
+	width: 100px;
+}
+
+.bpwc-inquiries__cell-icons {
+	width: 60px;
+}
+
+.bpwc-inquiries__cell-icons .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	color: var(--bpwc-success);
+	margin-right: 4px;
+}
+
+.bpwc-inquiries__cell-actions {
+	width: 140px;
+}
+
+.bpwc-inquiries__cell-actions .components-select-control__input {
+	min-height: 30px;
+	font-size: 12px;
+}
+
+/* ---- Settings Grid ---- */
+
+.bpwc-inquiries__settings-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--space-3xl);
+	margin-bottom: var(--space-2xl);
+}
+
+.bpwc-inquiries__settings-grid h3 {
+	margin: 0 0 var(--space-lg);
+	font-size: 15px;
+	font-weight: 600;
+}
+
+@media (max-width: 900px) {
+	.bpwc-inquiries__settings-grid {
+		grid-template-columns: 1fr;
+	}
+}

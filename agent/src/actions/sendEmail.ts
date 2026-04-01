@@ -1,62 +1,46 @@
-import { Action, z, configuration } from "@botpress/runtime";
+import { Action, z } from "@botpress/runtime";
+import { wpApiFetch } from "../tools/wp-api-client";
 
 export default new Action({
   name: "sendEmail",
-  description: "Send an email to a company contact on behalf of the website visitor",
+  description:
+    "Forward a visitor's message to the team. The message is stored in WordPress and notifications are sent automatically.",
   input: z.object({
-    to: z.string().email().describe("Recipient email address"),
-    subject: z.string().describe("Email subject line"),
-    body: z.string().describe("Email body text"),
     senderName: z
       .string()
       .describe("Name of the website visitor sending the message"),
     senderContact: z
       .string()
-      .describe("Callback number or email of the visitor"),
+      .describe("Email address or phone number of the visitor for callback"),
+    message: z.string().describe("The visitor's message to forward"),
   }),
   output: z.object({
     success: z.boolean(),
     error: z.string().optional(),
   }),
   async handler({ input }) {
-    const apiKey = configuration.sendgridApiKey;
-    const fromEmail = configuration.sendgridFromEmail;
-
-    if (!apiKey || !fromEmail) {
-      return {
-        success: false,
-        error: "SendGrid is not configured",
-      };
-    }
-
-    const fullBody = [
-      `Nachricht von: ${input.senderName}`,
-      `Rückmeldung an: ${input.senderContact}`,
-      `---`,
-      input.body,
-    ].join("\n");
-
     try {
-      const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      // Determine if contact is email or phone
+      const isEmail = input.senderContact.includes("@");
+
+      const res = await wpApiFetch("inquiry", {}, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
+        body: {
+          name: input.senderName,
+          email: isEmail ? input.senderContact : "",
+          phone: isEmail ? "" : input.senderContact,
+          message: input.message,
         },
-        body: JSON.stringify({
-          personalizations: [{ to: [{ email: input.to }] }],
-          from: { email: fromEmail, name: `Website Bot` },
-          subject: input.subject,
-          content: [{ type: "text/plain", value: fullBody }],
-        }),
       });
 
-      if (!res.ok) {
-        const text = await res.text();
-        return { success: false, error: `SendGrid ${res.status}: ${text}` };
+      if ((res as any).success) {
+        return { success: true };
       }
 
-      return { success: true };
+      return {
+        success: false,
+        error: (res as any).message || "Failed to forward message",
+      };
     } catch (e: any) {
       return { success: false, error: e.message };
     }

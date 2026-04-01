@@ -46,6 +46,14 @@ spl_autoload_register( function ( string $class ) {
 register_activation_hook( __FILE__, [ \Bpwc\Activation::class, 'activate' ] );
 register_deactivation_hook( __FILE__, [ \Bpwc\Activation::class, 'deactivate' ] );
 
+// Ensure Apache passes the Authorization header to PHP.
+// Required for CGI/FastCGI setups where the header is stripped.
+add_action( 'init', function () {
+	if ( ! isset( $_SERVER['HTTP_AUTHORIZATION'] ) && isset( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) ) {
+		$_SERVER['HTTP_AUTHORIZATION'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+	}
+} );
+
 // Boot plugin.
 add_action( 'plugins_loaded', function () {
 	\Bpwc\Plugin::instance();

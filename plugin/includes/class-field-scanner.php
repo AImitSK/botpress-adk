@@ -124,15 +124,14 @@ class Field_Scanner {
 	 * Fetch data from a post type using field mapping.
 	 */
 	public static function query_mapped_data( string $post_type, array $field_map, string $search = '', int $per_page = 50 ): array {
+		// Load all published posts, then filter in PHP.
+		// This is more reliable than WP_Query meta_query for searching across
+		// both post titles and arbitrary meta fields.
 		$args = [
 			'post_type'      => $post_type,
-			'posts_per_page' => $per_page,
+			'posts_per_page' => 200,
 			'post_status'    => 'publish',
 		];
-
-		if ( ! empty( $search ) ) {
-			$args['s'] = $search;
-		}
 
 		$query = new \WP_Query( $args );
 		$items = [];
@@ -142,12 +141,31 @@ class Field_Scanner {
 			foreach ( $field_map as $bot_field => $wp_field ) {
 				$item[ $bot_field ] = self::get_field_value( $post, $wp_field );
 			}
+
+			// Filter by search term — match against ANY mapped field value.
+			if ( ! empty( $search ) ) {
+				$match = false;
+				foreach ( $item as $value ) {
+					if ( is_string( $value ) && stripos( $value, $search ) !== false ) {
+						$match = true;
+						break;
+					}
+				}
+				if ( ! $match ) {
+					continue;
+				}
+			}
+
 			$items[] = $item;
 		}
 
+		// Apply per_page limit after filtering.
+		$total = count( $items );
+		$items = array_slice( $items, 0, $per_page );
+
 		return [
 			'data'  => $items,
-			'total' => $query->found_posts,
+			'total' => $total,
 		];
 	}
 

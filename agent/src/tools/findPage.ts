@@ -9,6 +9,10 @@ export default new Autonomous.Tool({
     search: z
       .string()
       .describe("Page title or keyword to search for, e.g. Kontakt, Anfrage"),
+    lang: z
+      .string()
+      .optional()
+      .describe("Language code (e.g. en, fr, de) for multilingual sites with WPML/Polylang"),
   }),
   output: z.object({
     pages: z.array(
@@ -21,8 +25,11 @@ export default new Autonomous.Tool({
     ),
     total: z.number(),
   }),
-  handler: async ({ search }) => {
-    const res = await wpApiFetch("pages", { search });
+  handler: async ({ search, lang }) => {
+    const params: Record<string, string | number> = { search };
+    if (lang) params.lang = lang;
+
+    const res = await wpApiFetch("pages", params);
 
     return { pages: res.data, total: res.total };
   },

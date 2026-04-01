@@ -4,6 +4,7 @@ namespace Bpwc\Rest;
 
 use Bpwc\Knowledge_Source;
 use Bpwc\Field_Scanner;
+use Bpwc\Settings;
 
 class Rest_Sources {
 
@@ -75,6 +76,11 @@ class Rest_Sources {
 			'permission_callback' => [ $this, 'check_bot_token' ],
 			'args'                => [
 				'search' => [
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+					'default'           => '',
+				],
+				'lang' => [
 					'type'              => 'string',
 					'sanitize_callback' => 'sanitize_text_field',
 					'default'           => '',
@@ -261,6 +267,12 @@ class Rest_Sources {
 	}
 
 	public function bot_query_source( \WP_REST_Request $request ): \WP_REST_Response {
+		// Switch WPML language if provided.
+		$lang = $request->get_param( 'lang' );
+		if ( $lang && Settings::get( 'language.wpml_active', false ) ) {
+			do_action( 'wpml_switch_language', $lang );
+		}
+
 		$source = Knowledge_Source::find( (int) $request->get_param( 'id' ) );
 
 		if ( ! $source || 'active' !== $source->status ) {

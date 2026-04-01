@@ -33,6 +33,10 @@ export default defineConfig({
         .string()
         .default("")
         .describe("Sender email address for SendGrid"),
+      monthlyBudgetUsd: z
+        .number()
+        .default(0)
+        .describe("Monthly AI spend limit in USD. 0 = unlimited."),
     }),
   },
 

@@ -93,6 +93,51 @@ class Botpress_Api {
 	}
 
 	/**
+	 * List table rows with optional filter.
+	 */
+	public function list_table_rows( string $table_name, array $filter = [], int $limit = 100, int $offset = 0 ): array|false {
+		$body = [
+			'limit'  => $limit,
+			'offset' => $offset,
+		];
+
+		if ( ! empty( $filter ) ) {
+			$body['filter'] = $filter;
+		}
+
+		return $this->post_request( "tables/{$table_name}/rows/find", $body );
+	}
+
+	/**
+	 * Make an authenticated POST request to the Botpress Cloud API.
+	 */
+	private function post_request( string $endpoint, array $body = [] ): array|false {
+		$url = self::API_BASE . '/' . $endpoint;
+
+		$response = wp_remote_post( $url, [
+			'headers' => [
+				'Authorization' => 'Bearer ' . $this->pat,
+				'x-bot-id'     => $this->bot_id,
+				'Content-Type'  => 'application/json',
+			],
+			'body'    => wp_json_encode( $body ),
+			'timeout' => 15,
+		] );
+
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+
+		$code = wp_remote_retrieve_response_code( $response );
+		if ( $code < 200 || $code >= 300 ) {
+			return false;
+		}
+
+		$result = wp_remote_retrieve_body( $response );
+		return json_decode( $result, true ) ?: false;
+	}
+
+	/**
 	 * Make an authenticated GET request to the Botpress Cloud API.
 	 */
 	private function request( string $endpoint, array $params = [] ): array|false {

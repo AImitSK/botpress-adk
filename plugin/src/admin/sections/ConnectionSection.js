@@ -2,10 +2,18 @@ import { useState } from '@wordpress/element';
 import { Button, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-export default function ConnectionSection( { settings, onSave, saving } ) {
+export default function ConnectionSection( { settings, onSave, saving, onChange } ) {
 	const conn = settings.connection;
+	const general = settings.general;
 	const hasBot = !! conn.bot_id && !! conn.webchat_id;
+	const isEnabled = !! general?.enabled;
 	const [ regStatus, setRegStatus ] = useState( null );
+
+	const toggleEnabled = () => {
+		const updated = { ...general, enabled: ! isEnabled };
+		onChange( { ...settings, general: updated } );
+		onSave( { general: updated } );
+	};
 
 	const handleConnect = async () => {
 		const result = await onSave( { connection: conn } );
@@ -30,11 +38,30 @@ export default function ConnectionSection( { settings, onSave, saving } ) {
 
 			{ hasBot ? (
 				<div>
+					<div className="bpwc-feature-card" style={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' } }>
+						<div>
+							<strong>{ __( 'Bot active', 'botpress-webchat' ) }</strong>
+							<p className="description" style={ { margin: '4px 0 0' } }>
+								{ isEnabled
+									? __( 'The chatbot is visible to visitors.', 'botpress-webchat' )
+									: __( 'The chatbot is hidden from visitors.', 'botpress-webchat' )
+								}
+							</p>
+						</div>
+						<button
+							className={ `bpwc-toggle ${ isEnabled ? 'is-active' : '' }` }
+							onClick={ toggleEnabled }
+							type="button"
+						>
+							<span className="bpwc-toggle__knob" />
+						</button>
+					</div>
+
 					<table className="form-table bpwc-connection-table">
 						<tbody>
 							<tr>
 								<th>{ __( 'Status', 'botpress-webchat' ) }</th>
-								<td><span className="bpwc-status bpwc-status--ok">{ __( 'Configured', 'botpress-webchat' ) }</span></td>
+								<td><span className={ `bpwc-status ${ isEnabled ? 'bpwc-status--ok' : 'bpwc-status--off' }` }>{ isEnabled ? __( 'Active', 'botpress-webchat' ) : __( 'Paused', 'botpress-webchat' ) }</span></td>
 							</tr>
 							<tr>
 								<th>{ __( 'Bot ID', 'botpress-webchat' ) }</th>

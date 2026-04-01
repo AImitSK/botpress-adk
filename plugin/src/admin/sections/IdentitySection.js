@@ -1,10 +1,20 @@
-import { TextControl, TextareaControl } from '@wordpress/components';
+import { TextControl, TextareaControl, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import MediaPicker from '../components/MediaPicker';
+
+const PROMPT_DEFAULTS = {
+	system_prompt: "Du bist ein freundlicher und kompetenter Support-Assistent für unsere Website.\nDeine Aufgabe ist es, Besuchern bei Fragen zu helfen — zu Produkten, Ansprechpartnern, Downloads und allgemeinen Informationen.\nNutze ausschließlich die verfügbaren Datenquellen, um Antworten zu geben.",
+	fallback_behavior: "Wenn du die Antwort nicht in den Datenquellen findest, sage ehrlich:\n\"Das kann ich leider nicht beantworten. Soll ich Ihre Anfrage an unser Team weiterleiten? Dafür benötige ich Ihren Namen und eine E-Mail-Adresse oder Telefonnummer.\"",
+	restrictions: "- Erfinde keine Informationen — antworte nur mit Daten aus den Datenquellen.\n- Nenne keine Preise, Verfügbarkeiten oder rechtliche Auskünfte, die nicht in den Daten stehen.\n- Gib keine medizinischen, rechtlichen oder finanziellen Ratschläge.\n- Leite bei Beschwerden oder dringenden Anliegen immer an einen echten Mitarbeiter weiter.",
+};
 
 export default function IdentitySection( { identity, onChange } ) {
 	const update = ( key, value ) => {
 		onChange( { ...identity, [ key ]: value } );
+	};
+
+	const resetPrompts = () => {
+		onChange( { ...identity, ...PROMPT_DEFAULTS } );
 	};
 
 	return (
@@ -36,6 +46,50 @@ export default function IdentitySection( { identity, onChange } ) {
 				value={ identity.bot_avatar_url }
 				onChange={ ( v ) => update( 'bot_avatar_url', v ) }
 			/>
+
+			<hr />
+			<h3>{ __( 'Bot Behavior', 'botpress-webchat' ) }</h3>
+
+			<div className="bpwc-field">
+				<TextareaControl
+					label={ __( 'Role & Task', 'botpress-webchat' ) }
+					help={ __( 'Describe what the bot should do. This is the main instruction for the AI.', 'botpress-webchat' ) }
+					value={ identity.system_prompt }
+					onChange={ ( v ) => update( 'system_prompt', v ) }
+					rows={ 4 }
+				/>
+			</div>
+
+			<div className="bpwc-field">
+				<TextareaControl
+					label={ __( 'Fallback Behavior', 'botpress-webchat' ) }
+					help={ __( 'What should the bot do when it cannot find the answer in the data sources?', 'botpress-webchat' ) }
+					value={ identity.fallback_behavior }
+					onChange={ ( v ) => update( 'fallback_behavior', v ) }
+					rows={ 3 }
+				/>
+			</div>
+
+			<div className="bpwc-field">
+				<TextareaControl
+					label={ __( 'Restrictions', 'botpress-webchat' ) }
+					help={ __( 'What the bot must never do. One rule per line.', 'botpress-webchat' ) }
+					value={ identity.restrictions }
+					onChange={ ( v ) => update( 'restrictions', v ) }
+					rows={ 4 }
+				/>
+			</div>
+
+			<Button
+				variant="secondary"
+				isSmall
+				onClick={ resetPrompts }
+			>
+				{ __( 'Reset to defaults', 'botpress-webchat' ) }
+			</Button>
+
+			<hr />
+			<h3>{ __( 'Chat Interface', 'botpress-webchat' ) }</h3>
 
 			<div className="bpwc-field">
 				<TextControl
